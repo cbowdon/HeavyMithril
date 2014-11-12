@@ -84,5 +84,9 @@ interface MithrilXHROptions {
 	config?(xhr: XMLHttpRequest, options: MithrilXHROptions): XMLHttpRequest;
 }
 
+declare module 'mithril' {
+    export = MithrilStatic;
+}
+
 declare var Mithril: MithrilStatic;
 declare var m: MithrilStatic;
