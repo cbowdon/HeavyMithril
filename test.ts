@@ -1,7 +1,7 @@
 /// <reference path="typings/tsd.d.ts" />
 /// <reference path="mithril.d.ts" />
 
-// m.prop
+//m.prop
 test("getter", assert => {
     var prop = m.prop("test")
     assert.strictEqual(prop(),"test")
@@ -36,4 +36,185 @@ test("then", assert => {
 test("null", assert => {
     var prop = m.prop(null)
     assert.strictEqual(prop(), null)
+})
+
+//m.deferred
+test("resolve", assert => {
+    var value: string
+    var deferred = m.deferred()
+    deferred.promise.then(function(data) {value = data})
+    deferred.resolve("test")
+    assert.strictEqual(value, "test")
+})
+test("changed by then", assert => {
+    var value: string
+    var deferred = m.deferred()
+    deferred.promise.then(function(data) {return "foo"}).then(function(data) {value = data})
+    deferred.resolve("test")
+    assert.strictEqual(value, "foo")
+})
+test("rejection callback", assert => {
+    var value: string
+    var deferred = m.deferred()
+    deferred.promise.then(null, function(data) {value = data})
+    deferred.reject("test")
+    assert.strictEqual(value, "test")
+})
+test("rejection callback changed by then", assert => {
+    var value: string
+    var deferred = m.deferred()
+    deferred.promise.then(null, function(data) {return "foo"}).then(function(data) {value = data})
+    deferred.reject("test")
+    assert.strictEqual(value, "foo")
+})
+test("name me", assert => {
+    var value1: number, value2: any
+    var deferred = m.deferred()
+    deferred.promise.then(function(data) {throw new Error}).then(function(data) {value1 = 1}, function(data) {value2 = data})
+    deferred.resolve("test")
+    assert.strictEqual(value1, undefined)
+    assert.ok(value2 instanceof Error)
+})
+test("name me", assert => {
+    //Let unchecked exceptions bubble up in order to allow meaningful error messages in common cases like null reference exceptions due to typos
+    //An unchecked exception is defined as an object that is a subclass of Error (but not a direct instance of Error itself) - basically anything that can be thrown without an explicit `throw` keyword and that we'd never want to programmatically manipulate. In other words, an unchecked error is one where we only care about its line number and where the only reasonable way to deal with it is to change the buggy source code that caused the error to be thrown in the first place.
+    //By contrast, a checked exception is defined as anything that is explicitly thrown via the `throw` keyword and that can be programmatically handled, for example to display a validation error message on the UI. If an exception is a subclass of Error for whatever reason, but it is meant to be handled as a checked exception (i.e. follow the rejection rules for A+), it can be rethrown as an instance of Error
+    //This test tests two implementation details that differ from the Promises/A+ spec:
+    //1) A+ requires the `then` callback to be called in a different event loop from the resolve call, i.e. it must be asynchronous (this requires a setImmediate polyfill, which cannot be implemented in a reasonable way for Mithril's purpose - the possible polyfills are either too big or too slow)
+    //2) A+ swallows exceptions in a unrethrowable way, i.e. it's not possible to see default error messages on the console for runtime errors thrown from within a promise chain
+    var value1: number, value2: string, value3: any, foo: any
+    var deferred = m.deferred()
+    try {
+        deferred.promise
+            .then(function(data) {foo["bar"]["baz"]}) //throws ReferenceError
+            .then(function(data) {value1 = 1}, function(data) {value2 = data})
+        deferred.resolve("test")
+    }
+    catch (e) {value3 = e}
+    assert.strictEqual(value1, undefined)
+    assert.strictEqual(value2, undefined)
+    assert.ok(value3 instanceof ReferenceError || value3 instanceof TypeError)
+})
+test("name me", assert => {
+    var deferred1 = m.deferred()
+    var deferred2 = m.deferred()
+    var value1: number, value2: number
+    deferred1.promise.then(function(data) {
+        value1 = data
+        return deferred2.promise
+    }).then(function(data) {
+        value2 = data
+    })
+    deferred1.resolve(1)
+    deferred2.resolve(2)
+    assert.strictEqual(value1, 1)
+    assert.strictEqual(value2, 2)
+})
+test("already resolved promises", assert => {
+    //https://github.com/lhorie/mithril.js/issues/80
+    var deferred = m.deferred(), value: number
+    deferred.resolve(1)
+    deferred.promise.then(function(data) {
+        value = data
+    })
+    assert.strictEqual(value, 1)
+})
+test("already rejected promises", assert => {
+    //https://github.com/lhorie/mithril.js/issues/80
+    var deferred = m.deferred(), value: string
+    deferred.reject(1)
+    deferred.promise.then(null, function(data) {
+        value = data
+    })
+    assert.strictEqual(value, 1)
+})
+test("already twice resolved promises", assert => {
+    //https://github.com/lhorie/mithril.js/issues/80
+    var deferred = m.deferred(), value: string
+    deferred.resolve(1)
+    deferred.resolve(2)
+    deferred.promise.then(function(data) {
+        value = data
+    })
+    assert.strictEqual(value, 1)
+})
+test("twice resolved promises", assert => {
+    //https://github.com/lhorie/mithril.js/issues/80
+    var deferred = m.deferred(), value: string
+    deferred.promise.then(function(data) {
+        value = data
+    })
+    deferred.resolve(1)
+    deferred.resolve(2)
+    assert.strictEqual(value, 1)
+})
+test("resolve then reject", assert => {
+    //https://github.com/lhorie/mithril.js/issues/80
+    var deferred = m.deferred(), value1: number, value2: number
+    deferred.promise.then(function(data) {
+        value1 = data
+    }, function(data) {
+        value2 = data
+    })
+    deferred.resolve(1)
+    deferred.reject(2)
+    assert.strictEqual(value1, 1)
+    assert.strictEqual(value2, undefined)
+})
+test("reject then resolve", assert => {
+    //https://github.com/lhorie/mithril.js/issues/80
+    var deferred = m.deferred(), value1: number, value2: number
+    deferred.promise.then(function(data) {
+        value1 = data
+    }, function(data) {
+        value2 = data
+    })
+    deferred.reject(1)
+    deferred.resolve(2)
+    assert.strictEqual(value1, undefined)
+    assert.strictEqual(value2, 1)
+})
+test("twice rejected", assert => {
+    //https://github.com/lhorie/mithril.js/issues/80
+    var deferred = m.deferred(), value: string
+    deferred.promise.then(null, function(data) {
+        value = data
+    })
+    deferred.reject(1)
+    deferred.reject(2)
+    assert.strictEqual(value, 1)
+})
+test("name me", assert => {
+    //https://github.com/lhorie/mithril.js/issues/85
+    var deferred = m.deferred(), value: number
+    deferred.resolve()
+    deferred.promise.then(function(data) {
+        value = 1
+    })
+    assert.strictEqual(value, 1)
+})
+test("name me", assert => {
+    //https://github.com/lhorie/mithril.js/issues/85
+    var deferred = m.deferred(), value: number
+    deferred.reject()
+    deferred.promise.then(null, function(data) {
+        value = 1
+    })
+    assert.strictEqual(value, 1)
+})
+test("name me", assert => {
+    var deferred = m.deferred(), value: number
+    deferred.resolve(1)
+    assert.strictEqual(deferred.promise(), 1)
+})
+test("name me", assert => {
+    var deferred = m.deferred(), value: number
+    var promise = deferred.promise.then(function(data) {return data + 1})
+    deferred.resolve(1)
+    assert.strictEqual(promise(), 2)
+})
+test("name me", assert => {
+    var deferred = m.deferred(), value: number
+    deferred.reject(1)
+    assert.strictEqual(deferred.promise(), undefined)
 })
