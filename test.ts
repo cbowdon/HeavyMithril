@@ -27,9 +27,7 @@ test("defer", assert => {
 })
 test("then", assert => {
     var defer = m.deferred()
-    var prop = m.prop(defer.promise);
-
-    prop.then(function () {
+    var prop = m.prop(defer.promise).then(function () {
         return "test2"
     })
     defer.resolve("test")
