@@ -4,7 +4,7 @@ interface MithrilStatic {
 	(selector: string, attributes: Object, children?: any): MithrilVirtualElement;
 	(selector: string, children?: any): MithrilVirtualElement;
 
-    prop(promise: MithrilPromise) : MithrilPromiseProperty;
+    prop<T>(promise: MithrilPromise<T>) : MithrilPromiseProperty<T>;
 	prop<T>(value?: T): MithrilProperty<T>;
 
 	withAttr(property: string, callback: (value: any) => void): (e: Event) => any;
@@ -24,11 +24,11 @@ interface MithrilStatic {
 	route(): string;
 	route(element: Element, isInitialized: boolean): void;
 
-	request(options: MithrilXHROptions): MithrilPromise;
+	request<T>(options: MithrilXHROptions): MithrilPromise<T>;
 
-	deferred(): MithrilDeferred;
+	deferred: MithrilDeferredStatic;
 
-	sync(promises: MithrilPromise[]): MithrilPromise;
+	sync<T>(promises: MithrilPromise<T>[]): MithrilPromise<T>;
 
 	startComputation(): void;
 
@@ -42,8 +42,8 @@ interface MithrilProperty<T> {
     toJSON(): T;
 }
 
-interface MithrilPromiseProperty extends MithrilProperty<MithrilPromise> {
-	then(successCallback?: (value: any) => any, errorCallback?: (value: any) => any): MithrilPromise;
+interface MithrilPromiseProperty<T> extends MithrilProperty<MithrilPromise<T>> {
+	then(successCallback?: (value: any) => any, errorCallback?: (value: any) => any): MithrilPromise<T>;
 }
 
 interface MithrilVirtualElement {
@@ -57,15 +57,21 @@ interface MithrilModule {
 	view: Function;
 }
 
-interface MithrilDeferred {
-	resolve(value?: any): void;
+interface MithrilDeferred<T> {
+	resolve(value?: T): void;
 	reject(value?: any): void;
-	promise: MithrilPromise;
+	promise: MithrilPromise<T>;
 }
 
-interface MithrilPromise {
-	(value?: any): any;
-	then(successCallback?: (value: any) => any, errorCallback?: (value: any) => any): MithrilPromise;
+interface MithrilDeferredStatic {
+    onerror(e: Error): void;
+    <T>(): MithrilDeferred<T>;
+}
+
+interface MithrilPromise<T> {
+	(value?: T): T;
+	then<U>(successCallback: (value: T) => MithrilPromise<U>, errorCallback?: (value: any) => any): MithrilPromise<U>;
+	then<U>(successCallback: (value: T) => U, errorCallback?: (value: any) => any): MithrilPromise<U>;
 }
 
 interface MithrilXHROptions {

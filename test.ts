@@ -41,15 +41,15 @@ test("null", assert => {
 //m.deferred
 test("resolve", assert => {
     var value: string
-    var deferred = m.deferred()
-    deferred.promise.then(function(data) {value = data})
+    var deferred = m.deferred<string>()
+    deferred.promise.then<void>(function(data) {value = data})
     deferred.resolve("test")
     assert.strictEqual(value, "test")
 })
 test("changed by then", assert => {
     var value: string
-    var deferred = m.deferred()
-    deferred.promise.then(function(data) {return "foo"}).then(function(data) {value = data})
+    var deferred = m.deferred<string>()
+    deferred.promise.then<string>(function(data) {return "foo"}).then<void>(function(data) {value = data})
     deferred.resolve("test")
     assert.strictEqual(value, "foo")
 })
@@ -62,8 +62,8 @@ test("rejection callback", assert => {
 })
 test("rejection callback changed by then", assert => {
     var value: string
-    var deferred = m.deferred()
-    deferred.promise.then(null, function(data) {return "foo"}).then(function(data) {value = data})
+    var deferred = m.deferred<string>()
+    deferred.promise.then<string>(null, function(data) {return "foo"}).then(function(data) {value = data})
     deferred.reject("test")
     assert.strictEqual(value, "foo")
 })
@@ -96,8 +96,8 @@ test("name me", assert => {
     assert.ok(value3 instanceof ReferenceError || value3 instanceof TypeError)
 })
 test("name me", assert => {
-    var deferred1 = m.deferred()
-    var deferred2 = m.deferred()
+    var deferred1 = m.deferred<number>()
+    var deferred2 = m.deferred<number>()
     var value1: number, value2: number
     deferred1.promise.then(function(data) {
         value1 = data
@@ -112,7 +112,7 @@ test("name me", assert => {
 })
 test("already resolved promises", assert => {
     //https://github.com/lhorie/mithril.js/issues/80
-    var deferred = m.deferred(), value: number
+    var deferred = m.deferred<number>(), value: number
     deferred.resolve(1)
     deferred.promise.then(function(data) {
         value = data
@@ -130,7 +130,7 @@ test("already rejected promises", assert => {
 })
 test("already twice resolved promises", assert => {
     //https://github.com/lhorie/mithril.js/issues/80
-    var deferred = m.deferred(), value: string
+    var deferred = m.deferred<number>(), value: number
     deferred.resolve(1)
     deferred.resolve(2)
     deferred.promise.then(function(data) {
@@ -140,7 +140,7 @@ test("already twice resolved promises", assert => {
 })
 test("twice resolved promises", assert => {
     //https://github.com/lhorie/mithril.js/issues/80
-    var deferred = m.deferred(), value: string
+    var deferred = m.deferred<number>(), value: number
     deferred.promise.then(function(data) {
         value = data
     })
@@ -150,7 +150,7 @@ test("twice resolved promises", assert => {
 })
 test("resolve then reject", assert => {
     //https://github.com/lhorie/mithril.js/issues/80
-    var deferred = m.deferred(), value1: number, value2: number
+    var deferred = m.deferred<number>(), value1: number, value2: number
     deferred.promise.then(function(data) {
         value1 = data
     }, function(data) {
@@ -163,7 +163,7 @@ test("resolve then reject", assert => {
 })
 test("reject then resolve", assert => {
     //https://github.com/lhorie/mithril.js/issues/80
-    var deferred = m.deferred(), value1: number, value2: number
+    var deferred = m.deferred<number>(), value1: number, value2: number
     deferred.promise.then(function(data) {
         value1 = data
     }, function(data) {
@@ -208,7 +208,7 @@ test("name me", assert => {
     assert.strictEqual(deferred.promise(), 1)
 })
 test("name me", assert => {
-    var deferred = m.deferred(), value: number
+    var deferred = m.deferred<number>(), value: number
     var promise = deferred.promise.then(function(data) {return data + 1})
     deferred.resolve(1)
     assert.strictEqual(promise(), 2)
