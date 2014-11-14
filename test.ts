@@ -67,7 +67,7 @@ test("rejection callback changed by then", assert => {
     deferred.reject("test")
     assert.strictEqual(value, "foo")
 })
-test("name me", assert => {
+test("error handling", assert => {
     var value1: number, value2: any
     var deferred = m.deferred()
     deferred.promise.then(function(data) {throw new Error}).then(function(data) {value1 = 1}, function(data) {value2 = data})
@@ -75,7 +75,7 @@ test("name me", assert => {
     assert.strictEqual(value1, undefined)
     assert.ok(value2 instanceof Error)
 })
-test("name me", assert => {
+test("let unchecked exceptions bubbble up", assert => {
     //Let unchecked exceptions bubble up in order to allow meaningful error messages in common cases like null reference exceptions due to typos
     //An unchecked exception is defined as an object that is a subclass of Error (but not a direct instance of Error itself) - basically anything that can be thrown without an explicit `throw` keyword and that we'd never want to programmatically manipulate. In other words, an unchecked error is one where we only care about its line number and where the only reasonable way to deal with it is to change the buggy source code that caused the error to be thrown in the first place.
     //By contrast, a checked exception is defined as anything that is explicitly thrown via the `throw` keyword and that can be programmatically handled, for example to display a validation error message on the UI. If an exception is a subclass of Error for whatever reason, but it is meant to be handled as a checked exception (i.e. follow the rejection rules for A+), it can be rethrown as an instance of Error
@@ -95,7 +95,7 @@ test("name me", assert => {
     assert.strictEqual(value2, undefined)
     assert.ok(value3 instanceof ReferenceError || value3 instanceof TypeError)
 })
-test("name me", assert => {
+test("returning another promise", assert => {
     var deferred1 = m.deferred<number>()
     var deferred2 = m.deferred<number>()
     var value1: number, value2: number
@@ -184,7 +184,7 @@ test("twice rejected", assert => {
     deferred.reject(2)
     assert.strictEqual(value, 1)
 })
-test("name me", assert => {
+test("retroactive then with no resolve value", assert => {
     //https://github.com/lhorie/mithril.js/issues/85
     var deferred = m.deferred(), value: number
     deferred.resolve()
@@ -193,7 +193,7 @@ test("name me", assert => {
     })
     assert.strictEqual(value, 1)
 })
-test("name me", assert => {
+test("retroactive then with no reject value", assert => {
     //https://github.com/lhorie/mithril.js/issues/85
     var deferred = m.deferred(), value: number
     deferred.reject()
@@ -202,18 +202,18 @@ test("name me", assert => {
     })
     assert.strictEqual(value, 1)
 })
-test("name me", assert => {
+test("call to resolved promise", assert => {
     var deferred = m.deferred(), value: number
     deferred.resolve(1)
     assert.strictEqual(deferred.promise(), 1)
 })
-test("name me", assert => {
+test("call to resolved and thenned promise", assert => {
     var deferred = m.deferred<number>(), value: number
     var promise = deferred.promise.then(function(data) {return data + 1})
     deferred.resolve(1)
     assert.strictEqual(promise(), 2)
 })
-test("name me", assert => {
+test("call to rejected promise", assert => {
     var deferred = m.deferred(), value: number
     deferred.reject(1)
     assert.strictEqual(deferred.promise(), undefined)
