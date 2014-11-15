@@ -1,8 +1,8 @@
 //Mithril type definitions for Typescript
 
 interface MithrilStatic {
-	(selector: string, attributes: Object, children?: any): MithrilVirtualElement;
-	(selector: string, children?: any): MithrilVirtualElement;
+	(selector: string, attributes: Object, ...children: any[]): MithrilVirtualElement;
+	(selector: string, ...children: any[]): MithrilVirtualElement;
 
     prop<T>(promise: MithrilPromise<T>) : MithrilPromiseProperty<T>;
 	prop<T>(value?: T): MithrilProperty<T>;
@@ -64,8 +64,14 @@ interface MithrilPromiseProperty<T> extends MithrilProperty<MithrilPromise<T>>, 
 
 interface MithrilVirtualElement {
 	tag: string;
-	attrs: Object;
+	attrs: MithrilVirtualElementAttributes;
 	children: any;
+}
+
+interface MithrilVirtualElementAttributes {
+    [id: string]: string;
+    title?: string;
+    className?: string;
 }
 
 interface MithrilModule {
