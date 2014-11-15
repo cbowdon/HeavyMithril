@@ -1,7 +1,7 @@
 /// <reference path="typings/tsd.d.ts" />
 /// <reference path="mithril.d.ts" />
 
-//m.prop
+QUnit.module("m.prop")
 test("getter", assert => {
     var prop = m.prop("test")
     assert.strictEqual(prop(),"test")
@@ -38,7 +38,7 @@ test("null", assert => {
     assert.strictEqual(prop(), null)
 })
 
-//m.deferred
+QUnit.module("m.deferred")
 test("resolve", assert => {
     var value: string
     var deferred = m.deferred<string>()

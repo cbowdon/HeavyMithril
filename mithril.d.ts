@@ -37,26 +37,6 @@ interface MithrilStatic {
 	deps(Object: any): Object;
 }
 
-interface MithrilProperty<T> {
-    (value?: T): T;
-    toJSON(): T;
-}
-
-interface MithrilPromiseProperty<T> extends MithrilProperty<MithrilPromise<T>> {
-	then(successCallback?: (value: any) => any, errorCallback?: (value: any) => any): MithrilPromise<T>;
-}
-
-interface MithrilVirtualElement {
-	tag: string;
-	attrs: Object;
-	children: any;
-}
-
-interface MithrilModule {
-	controller: Function;
-	view: Function;
-}
-
 interface MithrilDeferred<T> {
 	resolve(value?: T): void;
 	reject(value?: any): void;
@@ -72,6 +52,25 @@ interface MithrilPromise<T> {
 	(value?: T): T;
 	then<U>(successCallback: (value: T) => MithrilPromise<U>, errorCallback?: (value: any) => any): MithrilPromise<U>;
 	then<U>(successCallback: (value: T) => U, errorCallback?: (value: any) => any): MithrilPromise<U>;
+}
+
+interface MithrilProperty<T> {
+    (value?: T): T;
+    toJSON(): T;
+}
+
+interface MithrilPromiseProperty<T> extends MithrilProperty<MithrilPromise<T>>, MithrilPromise<T> {
+}
+
+interface MithrilVirtualElement {
+	tag: string;
+	attrs: Object;
+	children: any;
+}
+
+interface MithrilModule {
+	controller: Function;
+	view: Function;
 }
 
 interface MithrilXHROptions {
@@ -90,9 +89,9 @@ interface MithrilXHROptions {
 	config?(xhr: XMLHttpRequest, options: MithrilXHROptions): XMLHttpRequest;
 }
 
+declare var Mithril: MithrilStatic;
+declare var m: MithrilStatic;
+
 declare module 'mithril' {
     export = MithrilStatic;
 }
-
-declare var Mithril: MithrilStatic;
-declare var m: MithrilStatic;
