@@ -2,32 +2,92 @@
 /// <reference path="mithril.d.ts" />
 
 QUnit.module("m")
-test("div tag", assert => { assert.strictEqual(m("div").tag, "div") })
-test("default tag is div", assert => { assert.strictEqual(m(".foo").tag, "div") })
-test("classname", assert => { assert.strictEqual(m(".foo").attrs.className, "foo") })
-test("title attribute defaults to div", assert => { assert.strictEqual(m("[title=bar]").tag, "div") })
-test("setting title", assert => { assert.strictEqual(m("[title=bar]").attrs.title, "bar") })
-test("setting single-quoted title", assert => { assert.strictEqual(m("[title=\'bar\']").attrs.title, "bar") })
-test("setting double-quoted title", assert => { assert.strictEqual(m("[title=\"bar\"]").attrs.title, "bar") })
-test("first child", assert => { assert.strictEqual(m("div", "test").children[0], "test") })
-test("second child", assert => { assert.strictEqual(m("div", "test", "test2").children[1], "test2") })
-test("first child (array)", assert => { assert.strictEqual(m("div", ["test"]).children[0], "test") })
-test("setting title with child", assert => { assert.strictEqual(m("div", {title: "bar"}, "test").attrs.title, "bar") })
-test("setting title with child array", assert => { assert.strictEqual(m("div", {title: "bar"}, "test").children[0], "test") })
-test("first child after setting title", assert => { assert.strictEqual(m("div", {title: "bar"}, ["test"]).children[0], "test") })
-test("tag of first child defaults to div", assert => { assert.strictEqual(m("div", {title: "bar"}, m("div")).children[0].tag, "div") })
-test("tag for nested m()s", assert => { assert.strictEqual(m("div", {title: "bar"}, [m("div")]).children[0].tag, "div") })
-test("name me", assert => { assert.strictEqual(m("div", {title: "bar"}, "test0", "test1", "test2", "test3").children[3], "test3") }) // splat
-test("name me", assert => { assert.strictEqual(m("div", {title: "bar"}, m("div"), m("i"), m("span")).children[2].tag, "span") })
-test("name me", assert => { assert.strictEqual(m("div", ["a", "b"]).children.length, 2) })
-test("name me", assert => { assert.strictEqual(m("div", [m("div")]).children[0].tag, "div") })
-test("name me", assert => { assert.strictEqual(m("div", m("div")).children[0].tag, "div") }) //yes, this is expected behavior: see method signature
-test("name me", assert => { assert.strictEqual(m("div", [undefined]).tag, "div") })
-test("no errors div with child", assert => { assert.ok(m("div", [{foo: "bar"}])) }) //as long as it doesn't throw errors, it's fine
-test("no errors svg with g child", assert => { assert.ok(m("svg", [m("g")])) })
-test("no errors svg with link child", assert => { assert.ok(m("svg", [m("a[href='http://google.com']")])) })
-test("name me", assert => { assert.strictEqual(m(".foo", {"class": "bar"}).attrs["class"], "foo bar") })
-test("name me", assert => { assert.strictEqual(m(".foo", {className: "bar"}).attrs.className, "foo bar") })
+test("div tag", assert => {
+    assert.strictEqual(m("div").tag, "div")
+})
+test("default tag is div", assert => {
+    assert.strictEqual(m(".foo").tag, "div")
+})
+test("classname", assert => {
+    assert.strictEqual(m(".foo").attrs.className, "foo")
+})
+test("title attribute defaults to div", assert => {
+    assert.strictEqual(m("[title=bar]").tag, "div")
+})
+test("setting title", assert => {
+    assert.strictEqual(m("[title=bar]").attrs.title, "bar")
+})
+test("setting single-quoted title", assert => {
+    assert.strictEqual(m("[title=\'bar\']").attrs.title, "bar")
+})
+test("setting double-quoted title", assert => {
+    assert.strictEqual(m("[title=\"bar\"]").attrs.title, "bar")
+})
+test("first child", assert => {
+    assert.strictEqual(m("div", "test").children[0], "test")
+})
+test("second child", assert => {
+    assert.strictEqual(m("div", "test", "test2").children[1], "test2")
+})
+test("first child (array)", assert => {
+    assert.strictEqual(m("div", ["test"]).children[0], "test")
+})
+test("setting title with child", assert => {
+    assert.strictEqual(m("div", {title: "bar"}, "test").attrs.title, "bar")
+})
+test("setting title with child array", assert => {
+    assert.strictEqual(m("div", {title: "bar"}, "test").children[0], "test")
+})
+test("first child after setting title", assert => {
+    assert.strictEqual(m("div", {title: "bar"}, ["test"]).children[0], "test")
+})
+test("tag of first child defaults to div", assert => {
+    assert.strictEqual(m("div", {title: "bar"}, m("div")).children[0].tag, "div")
+})
+test("tag for nested m()s", assert => {
+    assert.strictEqual(m("div", {title: "bar"}, [m("div")]).children[0].tag, "div")
+})
+test("splat", assert => {
+    assert.strictEqual(m("div", {title: "bar"}, "test0", "test1", "test2", "test3").children[3], "test3")
+})
+test("mixed children", assert => {
+    assert.strictEqual(m("div", {title: "bar"}, m("div"), m("i"), m("span")).children[2].tag, "span")
+})
+test("children length", assert => {
+    assert.strictEqual(m("div", ["a", "b"]).children.length, 2)
+})
+test("child tag", assert => {
+    assert.strictEqual(m("div", [m("div")]).children[0].tag, "div")
+})
+test("nested divs", assert => {
+    assert.strictEqual(m("div", m("div")).children[0].tag, "div") }) //yes, this is expected behavior: see method signature
+test("undefined child", assert => {
+    assert.strictEqual(m("div", [undefined]).tag, "div")
+})
+test("no errors div with child", assert => {
+    assert.ok(m("div", [{foo: "bar"}])) }) //as long as it doesn't throw errors, it's fine
+test("no errors svg with g child", assert => {
+    assert.ok(m("svg", [m("g")]))
+})
+test("no errors svg with link child", assert => {
+    assert.ok(m("svg", [m("a[href='http://google.com']")]))
+})
+test("composing classes (class attr)", assert => {
+    assert.strictEqual(m(".foo", {"class": "bar"}).attrs["class"], "foo bar")
+})
+test("composing classes (classname attr)", assert => {
+    assert.strictEqual(m(".foo", {className: "bar"}).attrs.className, "foo bar")
+})
+
+QUnit.module("m.withAttr")
+test("extracting attribute value", assert => {
+    var value: string
+    var handler = m.withAttr("test", function(data) { value = data })
+    var el = document.createElement("div")
+    var evt = { currentTarget: Object.defineProperty(el, "test", { value: "foo" }) }
+    handler(evt)
+    assert.strictEqual(value, "foo")
+})
 
 QUnit.module("m.prop")
 test("getter", assert => {

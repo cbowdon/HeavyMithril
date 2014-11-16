@@ -1,13 +1,16 @@
 //Mithril type definitions for Typescript
 
 interface MithrilStatic {
-	(selector: string, attributes: Object, ...children: any[]): MithrilVirtualElement;
+    // I think children is expected to be either string[] (content of divs) or MithrilVirtualElement[]
+    // however one of the tests says about that param "as long as it doesn't throw errors, it's fine"
+    // which would imply any[] is acceptable
+	(selector: string, attributes: MithrilAttributes, ...children: any[]): MithrilVirtualElement;
 	(selector: string, ...children: any[]): MithrilVirtualElement;
 
     prop<T>(promise: MithrilPromise<T>) : MithrilPromiseProperty<T>;
 	prop<T>(value?: T): MithrilProperty<T>;
 
-	withAttr(property: string, callback: (value: any) => void): (e: Event) => any;
+	withAttr(property: string, callback: (value: any) => void): (e: MithrilEvent) => any;
 
 	module(rootElement: Node, module: MithrilModule): Object;
 
@@ -64,14 +67,20 @@ interface MithrilPromiseProperty<T> extends MithrilProperty<MithrilPromise<T>>, 
 
 interface MithrilVirtualElement {
 	tag: string;
-	attrs: MithrilVirtualElementAttributes;
-	children: any;
+	attrs: MithrilAttributes;
+	children: any[];
 }
 
-interface MithrilVirtualElementAttributes {
+// Attributes on a virtual element
+interface MithrilAttributes {
     [id: string]: string;
     title?: string;
     className?: string;
+}
+
+// Defines the subset of Event that Mithril needs
+interface MithrilEvent {
+    currentTarget: Element;
 }
 
 interface MithrilModule {
