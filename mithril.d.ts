@@ -14,7 +14,7 @@ interface MithrilStatic {
 
 	module(rootElement: Node, module: MithrilModule): Object;
 
-	trust(html: string): String;
+	trust(html: string): string;
 
 	render(rootElement: Element, children?: any): void;
 	render(rootElement: HTMLDocument, children?: any): void;
@@ -37,6 +37,7 @@ interface MithrilStatic {
 
 	endComputation(): void;
 
+    // For test suite
 	deps(Object: any): Object;
 }
 
