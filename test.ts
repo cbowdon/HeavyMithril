@@ -9,6 +9,9 @@ interface TestView {
     (ctrl: TestCtrl): string;
 }
 
+(function (mock: MithrilWindow) {
+m.deps(mock.window)
+
 QUnit.module("m")
 test("div tag", assert => {
     assert.strictEqual(m("div").tag, "div")
@@ -339,3 +342,5 @@ test("call to rejected promise", assert => {
     deferred.reject(1)
     assert.strictEqual(deferred.promise(), undefined)
 })
+
+}(mock.window));
