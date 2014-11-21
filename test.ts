@@ -277,13 +277,13 @@ interface TestView {
 		var root = mock.document.createElement("div")
 		m.render(root, m("#foo", [m("#bar")]))
 		m.render(root, m("#foo", [m("#bar"), [m("#baz")]]))
-		assert.strictEqual(root.childNodes[0].childNodes[1].id, "baz")
+		assert.strictEqual((<HTMLDivElement>root.childNodes[0].childNodes[1]).id, "baz")
 	})
 	test("rendering document html #foo", assert => {
 		//https://github.com/lhorie/mithril.js/issues/48
 		var root = mock.document
 		m.render(root, m("html", [m("#foo")]))
-		var result = root.childNodes[0].childNodes[0].id === "foo"
+		var result = (<HTMLDivElement>root.childNodes[0].childNodes[0]).id === "foo"
 		root.childNodes = [mock.document.createElement("html")]
 		assert.ok(result)
 	})
@@ -333,7 +333,7 @@ interface TestView {
 		var root = mock.document.createElement("div")
 		m.render(root, m("#foo", [[m("div", "a"), m("div", "b")], [m("div", "c"), m("div", "d")], m("#bar")]))
 		assert.strictEqual(root.childNodes[0].childNodes[3].childNodes[0].nodeValue, "d" )
-        assert.strictEqual(root.childNodes[0].childNodes[4].id, "bar")
+        assert.strictEqual((<HTMLDivElement>root.childNodes[0].childNodes[4]).id, "bar")
 	})
 	test("nested virtual elements and a raw string", assert => {
 		//https://github.com/lhorie/mithril.js/issues/50
@@ -414,28 +414,27 @@ interface TestView {
         assert.strictEqual(valueBefore2, "" )
         assert.strictEqual(valueAfter2, "UL")
 	})
-/*
 	test("updating style value to empty object should clear style", assert => {
 		//https://github.com/lhorie/mithril.js/issues/79
 		var root = mock.document.createElement("div")
 		m.render(root, m("div", {style: {background: "red"}}))
-		var valueBefore = root.childNodes[0].style.background
+		var valueBefore = (<HTMLDivElement>root.childNodes[0]).style.background
 		m.render(root, m("div", {style: {}}))
-		var valueAfter = root.childNodes[0].style.background
+		var valueAfter = (<HTMLDivElement>root.childNodes[0]).style.background
 		assert.strictEqual(valueBefore, "red" )
         assert.strictEqual(valueAfter, "")
 	})
 	test("style=... css selector", assert => {
 		var root = mock.document.createElement("div")
 		m.render(root, m("div[style='background:red']"))
-		assert.strictEqual(root.childNodes[0].style, "background:red")
+		assert.strictEqual((<HTMLDivElement>root.childNodes[0]).style, "background:red")
 	})
 	test("replacing style with empty object should clear style", assert => {
 		var root = mock.document.createElement("div")
 		m.render(root, m("div", {style: {background: "red"}}))
-		var valueBefore = root.childNodes[0].style.background
+		var valueBefore = (<HTMLDivElement>root.childNodes[0]).style.background
 		m.render(root, m("div", {}))
-		var valueAfter = root.childNodes[0].style.background
+		var valueAfter = (<HTMLDivElement>root.childNodes[0]).style.background
 		assert.strictEqual(valueBefore, "red" )
         assert.strictEqual(valueAfter, undefined)
 	})

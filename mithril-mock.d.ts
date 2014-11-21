@@ -17,12 +17,7 @@ declare module Mithril {
 
 }
 
-// Extend builtins to accommodate dynamic properties added
-interface Node {
-    id: string;
-    //style?: { [id: string]: string };
-}
-
+// Extend array to allow use as literal for NodeList
 interface Array<T> {
     item(n: number): T;
 }
