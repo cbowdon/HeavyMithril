@@ -3,9 +3,7 @@
 declare module Mithril {
 
     interface Static {
-        // From app code, I think children is expected to be either string[] (content of divs) or VirtualElement[]
-        // however one of the tests says about that param "as long as it doesn't throw errors, it's fine"
-        // which would imply any[] is acceptable
+        // children is string, virtual element, or an array of either
         (selector: string, attributes: Attributes, ...children: any[]): VirtualElement;
         (selector: string, ...children: any[]): VirtualElement;
 
@@ -81,7 +79,7 @@ declare module Mithril {
         className?: string;
     }
 
-    // Defines the subset of Event that  needs
+    // Defines the subset of Event that Mithril needs
     interface Event {
         currentTarget: Element;
     }

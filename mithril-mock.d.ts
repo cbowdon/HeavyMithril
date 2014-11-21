@@ -17,6 +17,16 @@ declare module Mithril {
 
 }
 
+// Extend builtins to accommodate dynamic properties added
+interface Node {
+    id: string;
+    //style?: { [id: string]: string };
+}
+
+interface Array<T> {
+    item(n: number): T;
+}
+
 declare var mock: Mithril.Mock;
 
 declare module 'mithril-mock' {
