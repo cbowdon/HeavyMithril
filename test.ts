@@ -2,6 +2,13 @@
 /// <reference path="mithril.d.ts" />
 /// <reference path="mithril-mock.d.ts" />
 
+interface TestCtrl extends MithrilController {
+    value?: string;
+}
+interface TestView {
+    (ctrl: TestCtrl): string;
+}
+
 QUnit.module("m")
 test("div tag", assert => {
     assert.strictEqual(m("div").tag, "div")
@@ -81,23 +88,15 @@ test("composing classes (classname attr)", assert => {
 })
 
 QUnit.module("m.module")
-interface TestCtrl {
-    (): void;
-    value?: string;
-}
-interface TestView {
-    (ctrl: TestCtrl): string;
-}
-
-test("name me", assert => {
+test("creation", assert => {
     mock.requestAnimationFrame.$resolve()
     var root1 = mock.document.createElement("div")
-    var mod1 = m.module<TestCtrl, TestView>(root1, {
+    var mod1 = m.module<TestCtrl>(root1, {
         controller: function() {this.value = "test1"},
         view: function(ctrl) {return ctrl.value}
     })
     var root2 = mock.document.createElement("div")
-    var mod2 = m.module<TestCtrl, TestView>(root2, {
+    var mod2 = m.module<TestCtrl>(root2, {
         controller: function() {this.value = "test2"},
         view: function(ctrl) {return ctrl.value}
     })
@@ -107,7 +106,6 @@ test("name me", assert => {
     assert.strictEqual(mod1.value, "test1")
     assert.strictEqual(mod2.value, "test2")
 })
-
 
 QUnit.module("m.withAttr")
 test("extracting attribute value", assert => {
