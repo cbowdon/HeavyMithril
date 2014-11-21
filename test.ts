@@ -2,7 +2,7 @@
 /// <reference path="mithril.d.ts" />
 /// <reference path="mithril-mock.d.ts" />
 
-interface TestCtrl extends MithrilController {
+interface TestCtrl extends Mithril.Controller {
     value?: string;
 }
 interface TestView {

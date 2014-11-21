@@ -2,7 +2,7 @@ import m = require('mithril');
 
 var asd = true;
 
-var prop = <MithrilProperty<string>>m.prop();
+var prop = <Mithril.Property<string>>m.prop();
 
 var xyz = prop('hello');
 var abc = prop();
