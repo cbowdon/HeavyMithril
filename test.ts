@@ -9,7 +9,7 @@ interface TestView {
     (ctrl: TestCtrl): string;
 }
 
-(function (mock: MithrilWindow) {
+(function (mock: Mithril.MockWindow) {
     m.deps(mock)
 
     QUnit.module("m")

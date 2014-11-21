@@ -1,19 +1,25 @@
 // For test suite
-interface MithrilMock {
-    window: MithrilWindow;
+
+declare module Mithril {
+
+  interface Mock {
+      window: MockWindow;
+  }
+
+  interface MockWindow extends Window {
+      requestAnimationFrame: RequestAnimationFrame;
+  }
+
+  interface RequestAnimationFrame {
+      (callback: FrameRequestCallback): number;
+      $resolve(): void;
+  }
+
 }
 
-interface MithrilWindow extends Window {
-    requestAnimationFrame: RequestAnimationFrame;
-}
-
-interface RequestAnimationFrame {
-    (callback: FrameRequestCallback): number;
-    $resolve(): void;
-}
-
-declare var mock: MithrilMock;
+declare var mock: Mithril.Mock;
 
 declare module 'mithril-mock' {
-    export = MithrilMock;
+    var mithrilMock: Mithril.Mock;
+    export = mithrilMock;
 }
