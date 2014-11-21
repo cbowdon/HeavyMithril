@@ -438,18 +438,18 @@ interface TestView {
 		assert.strictEqual(valueBefore, "red" )
         assert.strictEqual(valueAfter, undefined)
 	})
-/*
-	test("name me", assert => {
+	test("onunload should be called", assert => {
 		var root = mock.document.createElement("div")
-		var module = {}, unloaded = false
+		var module: any = {}, unloaded = false
 		module.controller = function() {
 			this.onunload = function() {unloaded = true}
 		}
 		module.view = function() {}
-		m.module(root, module)
+		m.module(root, <Mithril.Module<Mithril.Controller>>module)
 		m.module(root, {controller: function() {}, view: function() {}})
-		return unloaded === true
+		assert.strictEqual(unloaded, true)
 	})
+/*
 	test("name me", assert => {
 		//https://github.com/lhorie/mithril.js/issues/87
 		var root = mock.document.createElement("div")
