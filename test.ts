@@ -10,7 +10,7 @@ interface TestView {
 }
 
 (function (mock: MithrilWindow) {
-    m.deps(mock.window)
+    m.deps(mock)
 
     QUnit.module("m")
     test("div tag", assert => {
