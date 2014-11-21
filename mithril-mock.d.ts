@@ -1,5 +1,9 @@
 // For test suite
-interface MithrilMock extends Window {
+interface MithrilMock {
+    window: MithrilWindow;
+}
+
+interface MithrilWindow extends Window {
     requestAnimationFrame: RequestAnimationFrame;
 }
 

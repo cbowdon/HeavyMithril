@@ -14,7 +14,7 @@ interface MithrilStatic {
 
 	withAttr(property: string, callback: (value: any) => void): (e: MithrilEvent) => any;
 
-	module<TCtrl, TView>(rootElement: Node, module: MithrilModule<TCtrl, TView>): TCtrl;
+	module<T extends MithrilController>(rootElement: Node, module: MithrilModule<T>): T;
 
 	trust(html: string): string;
 
@@ -23,8 +23,8 @@ interface MithrilStatic {
 
 	redraw(): void;
 
-	route<TCtrl, TView>(rootElement: Element, defaultRoute: string, routes: { [key: string]: MithrilModule<TCtrl, TView> }): void;
-	route<TCtrl, TView>(rootElement: HTMLDocument, defaultRoute: string, routes: { [key: string]: MithrilModule<TCtrl, TView> }): void;
+	route<T extends MithrilController>(rootElement: Element, defaultRoute: string, routes: { [key: string]: MithrilModule<T> }): void;
+	route<T extends MithrilController>(rootElement: HTMLDocument, defaultRoute: string, routes: { [key: string]: MithrilModule<T> }): void;
 	route(path: string, params?: any, shouldReplaceHistory?: boolean): void;
 	route(): string;
 	route(element: Element, isInitialized: boolean): void;
@@ -86,10 +86,18 @@ interface MithrilEvent {
     currentTarget: Element;
 }
 
-// TODO might be able to replace TView with: (ctrl: TCtrl) => string;
-interface MithrilModule<TCtrl, TView> {
-	controller: TCtrl;
-	view: TView;
+interface MithrilController {
+    (): any;
+    onunload?(evt: Event): any;
+}
+
+interface MithrilView<T extends MithrilController> {
+    (ctrl: T): any; // string | MithrilVirtualElement
+}
+
+interface MithrilModule<T extends MithrilController> {
+	controller: T;
+	view: MithrilView<T>;
 }
 
 interface MithrilXHROptions {
