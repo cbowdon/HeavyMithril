@@ -81,16 +81,24 @@ test("composing classes (classname attr)", assert => {
 })
 
 QUnit.module("m.module")
+interface TestCtrl {
+    (): void;
+    value?: string;
+}
+interface TestView {
+    (ctrl: TestCtrl): string;
+}
+
 test("name me", assert => {
     mock.requestAnimationFrame.$resolve()
     var root1 = mock.document.createElement("div")
-    var mod1 = m.module(root1, {
-    controller: function() {this.value = "test1"},
+    var mod1 = m.module<TestCtrl, TestView>(root1, {
+        controller: function() {this.value = "test1"},
         view: function(ctrl) {return ctrl.value}
     })
     var root2 = mock.document.createElement("div")
-    var mod2 = m.module(root2, {
-    controller: function() {this.value = "test2"},
+    var mod2 = m.module<TestCtrl, TestView>(root2, {
+        controller: function() {this.value = "test2"},
         view: function(ctrl) {return ctrl.value}
     })
     mock.requestAnimationFrame.$resolve()

@@ -1,7 +1,9 @@
 //Mithril type definitions for Typescript
 
+//TODO interfaces module, get rid of Mithril prefixes everywhere
+
 interface MithrilStatic {
-    // I think children is expected to be either string[] (content of divs) or MithrilVirtualElement[]
+    // From app code, I think children is expected to be either string[] (content of divs) or MithrilVirtualElement[]
     // however one of the tests says about that param "as long as it doesn't throw errors, it's fine"
     // which would imply any[] is acceptable
 	(selector: string, attributes: MithrilAttributes, ...children: any[]): MithrilVirtualElement;
@@ -12,7 +14,7 @@ interface MithrilStatic {
 
 	withAttr(property: string, callback: (value: any) => void): (e: MithrilEvent) => any;
 
-	module(rootElement: Node, module: MithrilModule): Object;
+	module<TCtrl, TView>(rootElement: Node, module: MithrilModule<TCtrl, TView>): TCtrl;
 
 	trust(html: string): string;
 
@@ -21,8 +23,8 @@ interface MithrilStatic {
 
 	redraw(): void;
 
-	route(rootElement: Element, defaultRoute: string, routes: { [key: string]: MithrilModule }): void;
-	route(rootElement: HTMLDocument, defaultRoute: string, routes: { [key: string]: MithrilModule }): void;
+	route<TCtrl, TView>(rootElement: Element, defaultRoute: string, routes: { [key: string]: MithrilModule<TCtrl, TView> }): void;
+	route<TCtrl, TView>(rootElement: HTMLDocument, defaultRoute: string, routes: { [key: string]: MithrilModule<TCtrl, TView> }): void;
 	route(path: string, params?: any, shouldReplaceHistory?: boolean): void;
 	route(): string;
 	route(element: Element, isInitialized: boolean): void;
@@ -38,7 +40,7 @@ interface MithrilStatic {
 	endComputation(): void;
 
     // For test suite
-	deps(Object: any): Object;
+	deps(mockWindow: Window): Window;
 }
 
 interface MithrilDeferred<T> {
@@ -84,9 +86,10 @@ interface MithrilEvent {
     currentTarget: Element;
 }
 
-interface MithrilModule {
-	controller: Function;
-	view: Function;
+// TODO might be able to replace TView with: (ctrl: TCtrl) => string;
+interface MithrilModule<TCtrl, TView> {
+	controller: TCtrl;
+	view: TView;
 }
 
 interface MithrilXHROptions {
