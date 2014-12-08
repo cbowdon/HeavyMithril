@@ -1,5 +1,6 @@
 //Mithril type definitions for Typescript
 
+// TODO unghost these when done
 declare module Mithril {
 
     interface Static {
@@ -7,8 +8,14 @@ declare module Mithril {
         (selector: string, attributes: Attributes, ...children: any[]): VirtualElement;
         (selector: string, ...children: any[]): VirtualElement;
 
+        // problem: can't represent all uses
+        // e.g. var p = m.prop('str') // p: Property<string>
+        //      var q = p(42) // q: number, p: Property<number>
+        //      var r = p({}) // r: {}, p: Property<{}>
+        //      var s = p() // s: {}, p: Property<{}>
         prop<T>(promise: Promise<T>) : PromiseProperty<T>;
-        prop<T>(value?: T): Property<T>;
+        prop<T>(value: T): Property<T>;
+        prop(): Property<Object>;
 
         withAttr(property: string, callback: (value: any) => void): (e: Event) => any;
 
@@ -19,15 +26,11 @@ declare module Mithril {
         render(rootElement: Element, children?: any): void;
         render(rootElement: HTMLDocument, children?: any): void;
 
-        redraw(): void;
-
-        route<T extends Controller>(rootElement: Element, defaultRoute: string, routes: { [key: string]: Module<T> }): void;
-        route<T extends Controller>(rootElement: HTMLDocument, defaultRoute: string, routes: { [key: string]: Module<T> }): void;
-        route(path: string, params?: any, shouldReplaceHistory?: boolean): void;
-        route(): string;
-        route(element: Element, isInitialized: boolean): void;
+        redraw: RedrawStatic;
 
         request<T>(options: XHROptions): Promise<T>;
+
+        route: RouteStatic;
 
         deferred: DeferredStatic;
 
@@ -38,7 +41,7 @@ declare module Mithril {
         endComputation(): void;
 
         // For test suite
-        deps(mockWindow: Window): Window;
+        deps: DepsStatic;
     }
 
     interface Deferred<T> {
@@ -52,18 +55,33 @@ declare module Mithril {
         <T>(): Deferred<T>;
     }
 
+    interface SuccessCallback<T, U> {
+        (value: T): U;
+        (value: T): Promise<U>;
+    }
+
+    interface ErrorCallback<U> {
+        (value: Error): U;
+        (value: string): U;
+    }
+
     interface Promise<T> {
-        (value?: T): T;
-        then<U>(successCallback: (value: T) => Promise<U>, errorCallback?: (value: any) => any): Promise<U>;
-        then<U>(successCallback: (value: T) => U, errorCallback?: (value: any) => any): Promise<U>;
+        (): T;
+        (value: T): T;
+        then<U>(success: (value: T) => U, error?: (value: Error) => U): Promise<U>;
+        then<U>(success: (value: T) => Promise<U>, error?: (value: Error) => U): Promise<U>;
     }
 
     interface Property<T> {
-        (value?: T): T;
+        (): T;
+        (value: T): T;
         toJSON(): T;
     }
 
-    interface PromiseProperty<T> extends Property<Promise<T>>, Promise<T> {
+    interface PromiseProperty<T> extends Promise<T> {
+        (): T;
+        (value: T): T;
+        toJSON(): T;
     }
 
     interface VirtualElement {
@@ -98,8 +116,29 @@ declare module Mithril {
         view: View<T>;
     }
 
+    interface Routes<T extends Controller> {
+        [key: string]: Module<T>;
+    }
+
+    interface RouteStatic {
+        <T extends Controller>(rootElement: HTMLDocument, defaultRoute: string, routes: Routes<T>): void;
+        <T extends Controller>(rootElement: Element, defaultRoute: string, routes: Routes<T>): void;
+
+        (path: string, params?: any, shouldReplaceHistory?: boolean): void;
+        (): string;
+        (element: Element, isInitialized: boolean): void;
+
+        mode: string;
+        param(key: string): any;
+    }
+
+    interface RedrawStatic {
+        (force?: boolean): void;
+        strategy: Property<string>;
+    }
+
     interface XHROptions {
-        method: string;
+        method?: string;
         url: string;
         user?: string;
         password?: string;
@@ -112,8 +151,13 @@ declare module Mithril {
         extract?(xhr: XMLHttpRequest, options: XHROptions): string;
         type?(data: Object): void;
         config?(xhr: XMLHttpRequest, options: XHROptions): XMLHttpRequest;
+        dataType?: string;
     }
 
+    interface DepsStatic {
+        (mockWindow: Window): Window;
+        factory: Object; // what is this?
+    }
 }
 
 declare var Mithril: Mithril.Static;
