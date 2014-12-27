@@ -4,17 +4,13 @@
 declare module Mithril {
 
     interface Static {
-        // children is string, virtual element, or an array of either
+        // children is string, virtual element, or an array of either. Roll on union types...
         (selector: string, attributes: Attributes, ...children: any[]): VirtualElement;
         (selector: string, ...children: any[]): VirtualElement;
 
-        // problem: can't represent all uses
-        // e.g. var p = m.prop('str') // p: Property<string>
-        //      var q = p(42) // q: number, p: Property<number>
-        //      var r = p({}) // r: {}, p: Property<{}>
-        //      var s = p() // s: {}, p: Property<{}>
         prop<T>(promise: Promise<T>) : PromiseProperty<T>;
         prop<T>(value: T): Property<T>;
+        // might be that this should be Property<any>
         prop(): Property<Object>;
 
         withAttr(property: string, callback: (value: any) => void): (e: Event) => any;

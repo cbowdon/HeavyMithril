@@ -1695,7 +1695,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		return prop().url === "http://domain.com:80/foo"
 	})
 	test(function() {
-		var error = m.prop("no error")
+		var error = m.prop<any>("no error")
 		var prop = m.request({method: "GET", url: "test", deserialize: function() {throw new Error("error occurred")}}).then(null, error)
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().message === "error occurred" && error().message === "error occurred"
@@ -1754,7 +1754,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var	error = m.prop("no error")
 		var data
-		var req = m.request({url: "/test", dataType: "jsonp"}).then(function(received) {data = received}, error)
+		var req = m.request({url: "/test", dataType: "jsonp"}).then(function(received) {data = received; return data}, error)
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
@@ -1773,7 +1773,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var	error = m.prop("no error")
 		var data
-		var req = m.request({url: "/test", dataType: "jsonp", callbackKey: "jsonpCallback"}).then(function(received) {data = received}, error);
+		var req = m.request({url: "/test", dataType: "jsonp", callbackKey: "jsonpCallback"}).then(function(received) {data = received; return data}, error);
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()

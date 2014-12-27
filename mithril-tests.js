@@ -1592,7 +1592,8 @@ function testMithril(mock) {
                     } }, ctrl.number);
                 }
             }
-        })(root.childNodes[0]).onclick({});
+        });
+        root.childNodes[0].onclick(null);
         mock.requestAnimationFrame.$resolve(); //teardown
         return strategy == "diff" && root.childNodes[0].childNodes[0].nodeValue == "1";
     });
@@ -1616,7 +1617,8 @@ function testMithril(mock) {
                     } });
                 }
             }
-        })(root.childNodes[0]).onclick({});
+        });
+        root.childNodes[0].onclick(null);
         mock.requestAnimationFrame.$resolve(); //teardown
         return count == 2;
     });
@@ -1775,28 +1777,28 @@ function testMithril(mock) {
     //m.request
     test(function () {
         var prop = m.request({ method: "GET", url: "test" });
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop().method === "GET" && prop().url === "test";
     });
     test(function () {
         var prop = m.request({ method: "GET", url: "test" }).then(function (value) {
             return "foo";
         });
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop() === "foo";
     });
     test(function () {
         var prop = m.request({ method: "POST", url: "http://domain.com:80", data: {} }).then(function (value) {
             return value;
         });
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop().url === "http://domain.com:80";
     });
     test(function () {
         var prop = m.request({ method: "POST", url: "http://domain.com:80/:test1", data: { test1: "foo" } }).then(function (value) {
             return value;
         });
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop().url === "http://domain.com:80/foo";
     });
     test(function () {
@@ -1804,7 +1806,7 @@ function testMithril(mock) {
         var prop = m.request({ method: "GET", url: "test", deserialize: function () {
             throw new Error("error occurred");
         } }).then(null, error);
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop().message === "error occurred" && error().message === "error occurred";
     });
     test(function () {
@@ -1813,7 +1815,7 @@ function testMithril(mock) {
             throw new TypeError("error occurred");
         } }).then(null, error);
         try {
-            mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+            mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         }
         catch (e) {
             exception = e;
@@ -1825,37 +1827,37 @@ function testMithril(mock) {
         var error = m.prop("no error");
         var prop = m.request({ method: "POST", url: "test", data: { foo: 1 } }).then(null, error);
         var xhr = mock.XMLHttpRequest.$instances.pop();
-        xhr.onreadystatechange();
+        xhr.onreadystatechange(null);
         return xhr.$headers["Content-Type"] == "application/json; charset=utf-8";
     });
     test(function () {
         var error = m.prop("no error");
         var prop = m.request({ method: "POST", url: "test" }).then(null, error);
         var xhr = mock.XMLHttpRequest.$instances.pop();
-        xhr.onreadystatechange();
+        xhr.onreadystatechange(null);
         return xhr.$headers["Content-Type"] === undefined;
     });
     test(function () {
         var prop = m.request({ method: "POST", url: "test", initialValue: "foo" });
         var initialValue = prop();
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return initialValue === "foo";
     });
     test(function () {
         var prop = m.request({ method: "POST", url: "test", initialValue: "foo" }).then(function (value) {
             return "bar";
         });
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop() === "bar";
     });
     test(function () {
         var prop = m.request({ method: "GET", url: "test", data: { foo: 1 } });
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop().url === "test?foo=1";
     });
     test(function () {
         var prop = m.request({ method: "POST", url: "test", data: { foo: 1 } });
-        mock.XMLHttpRequest.$instances.pop().onreadystatechange();
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop().url === "test";
     });
     // m.request over jsonp
@@ -1868,6 +1870,7 @@ function testMithril(mock) {
         var data;
         var req = m.request({ url: "/test", dataType: "jsonp" }).then(function (received) {
             data = received;
+            return data;
         }, error);
         var callbackKey = Object.keys(mock).filter(function (globalKey) {
             return globalKey.indexOf("mithril_callback") > -1;
@@ -1888,6 +1891,7 @@ function testMithril(mock) {
         var data;
         var req = m.request({ url: "/test", dataType: "jsonp", callbackKey: "jsonpCallback" }).then(function (received) {
             data = received;
+            return data;
         }, error);
         var callbackKey = Object.keys(mock).filter(function (globalKey) {
             return globalKey.indexOf("mithril_callback") > -1;
@@ -2009,9 +2013,10 @@ function testMithril(mock) {
         //2) A+ swallows exceptions in a unrethrowable way, i.e. it's not possible to see default error messages on the console for runtime errors thrown from within a promise chain
         var value1, value2, value3;
         var deferred = m.deferred();
+        var foo;
         try {
             deferred.promise.then(function (data) {
-                foo.bar.baz;
+                foo["bar"]["baz"];
             }).then(function (data) {
                 value1 = 1;
             }, function (data) {
@@ -2091,7 +2096,7 @@ function testMithril(mock) {
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/80
         var deferred = m.deferred(), value1, value2;
-        deferred.promise.then(function () {
+        deferred.promise.then(function (data) {
             value1 = data;
         }, function (data) {
             value2 = data;
