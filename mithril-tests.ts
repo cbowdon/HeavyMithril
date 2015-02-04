@@ -520,12 +520,12 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var index = 0;
 		var success = true;
-		var statefulConfig = function(elem, isInitialized, ctx) {ctx.data = index++}
+		var statefulConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {ctx.data = index++}
 		var node = m("div", {config: statefulConfig});
 		m.render(root, [node, node]);
 
 		index = 0;
-		var checkConfig = function(elem, isInitialized, ctx) {
+		var checkConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {
 			success = success && (ctx.data === index++)
 		}
 		node = m("div", {config: checkConfig});
@@ -687,12 +687,12 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 		var unloadedParent = 0
 		var unloadedChild = 0
-		var configParent = function(el, init, ctx) {
+		var configParent: Mithril.ElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedParent++
 			}
 		}
-		var configChild = function(el, init, ctx) {
+		var configChild: Mithril.ElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedChild++
 			}
@@ -706,12 +706,12 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 		var unloadedParent = 0
 		var unloadedChild = 0
-		var configParent = function(el, init, ctx) {
+		var configParent: Mithril.ElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedParent++
 			}
 		}
-		var configChild = function(el, init, ctx) {
+		var configChild: Mithril.ElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedChild++
 			}

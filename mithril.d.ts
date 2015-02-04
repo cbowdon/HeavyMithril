@@ -4,9 +4,10 @@
 declare module Mithril {
 
     interface Static {
+
         // children is string, virtual element, or an array of either. Roll on union types...
-        (selector: string, attributes: Attributes, ...children: any[]): VirtualElement;
-        (selector: string, ...children: any[]): VirtualElement;
+        (selector: string, attributes: Attributes, ...children: Array<string|VirtualElement>): VirtualElement;
+        (selector: string, ...children: Array<string|VirtualElement>): VirtualElement;
 
         prop<T>(promise: Promise<T>) : PromiseProperty<T>;
         prop<T>(value: T): Property<T>;
@@ -19,8 +20,8 @@ declare module Mithril {
 
         trust(html: string): string;
 
-        render(rootElement: Element, children?: any): void;
-        render(rootElement: HTMLDocument, children?: any): void;
+        render(rootElement: Element, children?: any, forceRecreation?: boolean): void;
+        render(rootElement: HTMLDocument, children?: any, forceRecreation?: boolean): void;
 
         redraw: RedrawStatic;
 
@@ -81,17 +82,22 @@ declare module Mithril {
     }
 
     interface VirtualElement {
-        tag: string;
-        attrs: Attributes;
-        children: any[];
+        key?: number;
+        tag?: string;
+        attrs?: Attributes;
+        children?: any[];
+    }
+
+    interface ElementConfig {
+        (element: Element, isInitialized: boolean, context: any): void;
     }
 
     // Attributes on a virtual element
     interface Attributes {
-        [id: string]: string;
         title?: string;
         className?: string;
         class?: string;
+        config?: ElementConfig;
     }
 
     // Defines the subset of Event that Mithril needs
