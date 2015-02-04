@@ -91,6 +91,7 @@ declare module Mithril {
         [id: string]: string;
         title?: string;
         className?: string;
+        class?: string;
     }
 
     // Defines the subset of Event that Mithril needs

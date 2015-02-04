@@ -8,7 +8,8 @@ interface Test {
 }
 
 interface Node {
-    key: any; // string | number
+    id: string;
+    key: string|number;
 }
 
 interface NodeList extends Array<Node> { }
@@ -82,7 +83,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var unloaded = false
-		var mod = m.module(root, {
+		var mod = m.module<TestCtrl>(root, {
 			controller: function() {
 				this.value = "test1"
 				this.onunload = function() {
@@ -576,7 +577,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var firstBefore = root.childNodes[0]
 		m.render(root, [m("a", {key: 4}, 4), m("a", {key: 1}, 1), m("a", {key: 2}, 2)])
 		var firstAfter = root.childNodes[1]
-		return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue == 4 && root.childNodes.length == 3
+		return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue == "4" && root.childNodes.length == 3
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/98
@@ -638,7 +639,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var firstBefore = root.childNodes[0]
 		m.render(root, [m("a", {key: 2}, 2), m("br"), m("a", {key: 1}, 1)])
 		var firstAfter = root.childNodes[2]
-		return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue == 2 && root.childNodes.length == 3
+		return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue == "2" && root.childNodes.length == 3
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/134
@@ -1692,19 +1693,19 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 
-		var a = {}
+		var a: any = {}
 		a.controller = function() {
 			m.route("/b?foo=1", {foo: 2})
 		}
 		a.view = function() {return "a"}
 
-		var b = {}
+		var b:any = {}
 		b.controller = function() {}
 		b.view = function() {return "b"}
 
-		m.route(root, "/", {
-			"/": a,
-			"/b": b,
+		m.route<TestCtrl>(root, "/", {
+			"/": <Mithril.Module<TestCtrl>>a,
+			"/b": <Mithril.Module<TestCtrl>>b,
 		})
 		mock.requestAnimationFrame.$resolve()
 
@@ -1823,7 +1824,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		return prop().url === "test"
 	})
 	test(function() {
-		var prop = m.request({method: "GET", url: "test", data: {foo: [1, 2]}})
+		var prop = m.request<Mithril.XHROptions>({method: "GET", url: "test", data: {foo: [1, 2]}})
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().url === "test?foo%5B%5D=1&foo%5B%5D=2"
 	})

@@ -81,6 +81,21 @@ function testMithril(mock) {
     test(function () {
         return m(".foo", { className: "bar" }).attrs.className == "foo bar";
     });
+    test(function () {
+        return m(".foo", { className: "" }).attrs.className == "foo";
+    });
+    test(function () {
+        return m("div", { className: "" }).attrs.className === undefined;
+    }); //https://github.com/lhorie/mithril.js/issues/382
+    test(function () {
+        return m("div", { class: "" }).attrs.className === undefined;
+    });
+    test(function () {
+        return m("div", { className: "" }).attrs.class === undefined;
+    });
+    test(function () {
+        return m("div", { class: "" }).attrs.class === undefined;
+    });
     //m.module
     test(function () {
         mock.requestAnimationFrame.$resolve();
@@ -104,6 +119,26 @@ function testMithril(mock) {
         });
         mock.requestAnimationFrame.$resolve();
         return (root1.childNodes[0].nodeValue === "test1" && root2.childNodes[0].nodeValue === "test2") && (mod1.value && mod1.value === "test1") && (mod2.value && mod2.value === "test2");
+    });
+    test(function () {
+        mock.requestAnimationFrame.$resolve();
+        var root = mock.document.createElement("div");
+        var unloaded = false;
+        var mod = m.module(root, {
+            controller: function () {
+                this.value = "test1";
+                this.onunload = function () {
+                    unloaded = true;
+                };
+            },
+            view: function (ctrl) {
+                return ctrl.value;
+            }
+        });
+        mock.requestAnimationFrame.$resolve();
+        m.module(root, null);
+        mock.requestAnimationFrame.$resolve();
+        return unloaded;
     });
     //m.withAttr
     test(function () {
@@ -580,55 +615,55 @@ function testMithril(mock) {
         //https://github.com/lhorie/mithril.js/issues/98
         //insert at beginning
         var root = mock.document.createElement("div");
-        m.render(root, [m("a", { key: 1 }), m("a", { key: 2 }), m("a", { key: 3 })]);
+        m.render(root, [m("a", { key: 1 }, 1), m("a", { key: 2 }, 2), m("a", { key: 3 }, 3)]);
         var firstBefore = root.childNodes[0];
-        m.render(root, [m("a", { key: 4 }), m("a", { key: 1 }), m("a", { key: 2 }), m("a", { key: 3 })]);
+        m.render(root, [m("a", { key: 4 }, 4), m("a", { key: 1 }, 1), m("a", { key: 2 }, 2), m("a", { key: 3 }, 3)]);
         var firstAfter = root.childNodes[1];
-        return firstBefore == firstAfter && root.childNodes[0].key == 4 && root.childNodes.length == 4;
+        return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue == "4" && root.childNodes.length == 4;
     });
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/98
         var root = mock.document.createElement("div");
-        m.render(root, [m("a", { key: 1 }), m("a", { key: 2 }), m("a", { key: 3 })]);
+        m.render(root, [m("a", { key: 1 }, 1), m("a", { key: 2 }, 2), m("a", { key: 3 }, 3)]);
         var firstBefore = root.childNodes[0];
-        m.render(root, [m("a", { key: 4 }), m("a", { key: 1 }), m("a", { key: 2 })]);
+        m.render(root, [m("a", { key: 4 }, 4), m("a", { key: 1 }, 1), m("a", { key: 2 }, 2)]);
         var firstAfter = root.childNodes[1];
-        return firstBefore == firstAfter && root.childNodes[0].key == 4 && root.childNodes.length == 3;
+        return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue == "4" && root.childNodes.length == 3;
     });
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/98
         var root = mock.document.createElement("div");
-        m.render(root, [m("a", { key: 1 }), m("a", { key: 2 }), m("a", { key: 3 })]);
+        m.render(root, [m("a", { key: 1 }, 1), m("a", { key: 2 }, 2), m("a", { key: 3 }, 3)]);
         var firstBefore = root.childNodes[1];
-        m.render(root, [m("a", { key: 2 }), m("a", { key: 3 }), m("a", { key: 4 })]);
+        m.render(root, [m("a", { key: 2 }, 2), m("a", { key: 3 }, 3), m("a", { key: 4 }, 4)]);
         var firstAfter = root.childNodes[0];
-        return firstBefore == firstAfter && root.childNodes[0].key === "2" && root.childNodes.length === 3;
+        return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue === "2" && root.childNodes.length === 3;
     });
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/98
         var root = mock.document.createElement("div");
-        m.render(root, [m("a", { key: 1 }), m("a", { key: 2 }), m("a", { key: 3 }), m("a", { key: 4 }), m("a", { key: 5 })]);
+        m.render(root, [m("a", { key: 1 }, 1), m("a", { key: 2 }, 2), m("a", { key: 3 }, 3), m("a", { key: 4 }, 4), m("a", { key: 5 }, 5)]);
         var firstBefore = root.childNodes[0];
         var secondBefore = root.childNodes[1];
         var fourthBefore = root.childNodes[3];
-        m.render(root, [m("a", { key: 4 }), m("a", { key: 10 }), m("a", { key: 1 }), m("a", { key: 2 })]);
+        m.render(root, [m("a", { key: 4 }, 4), m("a", { key: 10 }, 10), m("a", { key: 1 }, 1), m("a", { key: 2 }, 2)]);
         var firstAfter = root.childNodes[2];
         var secondAfter = root.childNodes[3];
         var fourthAfter = root.childNodes[0];
-        return firstBefore === firstAfter && secondBefore === secondAfter && fourthBefore === fourthAfter && root.childNodes[1].key == "10" && root.childNodes.length === 4;
+        return firstBefore === firstAfter && secondBefore === secondAfter && fourthBefore === fourthAfter && root.childNodes[1].childNodes[0].nodeValue == "10" && root.childNodes.length === 4;
     });
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/98
         var root = mock.document.createElement("div");
-        m.render(root, [m("a", { key: 1 }), m("a", { key: 2 }), m("a", { key: 3 }), m("a", { key: 4 }), m("a", { key: 5 })]);
+        m.render(root, [m("a", { key: 1 }, 1), m("a", { key: 2 }, 2), m("a", { key: 3 }, 3), m("a", { key: 4 }, 4), m("a", { key: 5 }, 5)]);
         var firstBefore = root.childNodes[0];
         var secondBefore = root.childNodes[1];
         var fourthBefore = root.childNodes[3];
-        m.render(root, [m("a", { key: 4 }), m("a", { key: 10 }), m("a", { key: 2 }), m("a", { key: 1 }), m("a", { key: 6 }), m("a", { key: 7 })]);
+        m.render(root, [m("a", { key: 4 }, 4), m("a", { key: 10 }, 10), m("a", { key: 2 }, 2), m("a", { key: 1 }, 1), m("a", { key: 6 }, 6), m("a", { key: 7 }, 7)]);
         var firstAfter = root.childNodes[3];
         var secondAfter = root.childNodes[2];
         var fourthAfter = root.childNodes[0];
-        return firstBefore === firstAfter && secondBefore === secondAfter && fourthBefore === fourthAfter && root.childNodes[1].key == "10" && root.childNodes[4].key == "6" && root.childNodes[5].key == "7" && root.childNodes.length === 6;
+        return firstBefore === firstAfter && secondBefore === secondAfter && fourthBefore === fourthAfter && root.childNodes[1].childNodes[0].nodeValue == "10" && root.childNodes[4].childNodes[0].nodeValue == "6" && root.childNodes[5].childNodes[0].nodeValue == "7" && root.childNodes.length === 6;
     });
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/149
@@ -651,11 +686,11 @@ function testMithril(mock) {
         //https://github.com/lhorie/mithril.js/issues/246
         //insert at beginning with non-keyed in the middle
         var root = mock.document.createElement("div");
-        m.render(root, [m("a", { key: 1 })]);
+        m.render(root, [m("a", { key: 1 }, 1)]);
         var firstBefore = root.childNodes[0];
-        m.render(root, [m("a", { key: 2 }), m("br"), m("a", { key: 1 })]);
+        m.render(root, [m("a", { key: 2 }, 2), m("br"), m("a", { key: 1 }, 1)]);
         var firstAfter = root.childNodes[2];
-        return firstBefore == firstAfter && root.childNodes[0].key == 2 && root.childNodes.length == 3;
+        return firstBefore == firstAfter && root.childNodes[0].childNodes[0].nodeValue == "2" && root.childNodes.length == 3;
     });
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/134
@@ -758,10 +793,10 @@ function testMithril(mock) {
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/157
         var root = mock.document.createElement("div");
-        m.render(root, m("ul", [m("li", { key: 0 }), m("li", { key: 2 }), m("li", { key: 4 })]));
-        m.render(root, m("ul", [m("li", { key: 0 }), m("li", { key: 1 }), m("li", { key: 2 }), m("li", { key: 3 }), m("li", { key: 4 }), m("li", { key: 5 })]));
+        m.render(root, m("ul", [m("li", { key: 0 }, 0), m("li", { key: 2 }, 2), m("li", { key: 4 }, 4)]));
+        m.render(root, m("ul", [m("li", { key: 0 }, 0), m("li", { key: 1 }, 1), m("li", { key: 2 }, 2), m("li", { key: 3 }, 3), m("li", { key: 4 }, 4), m("li", { key: 5 }, 5)]));
         return root.childNodes[0].childNodes.map(function (n) {
-            return n.key;
+            return n.childNodes[0].nodeValue;
         }).join("") == "012345";
     });
     test(function () {
@@ -781,20 +816,20 @@ function testMithril(mock) {
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/194
         var root = mock.document.createElement("div");
-        m.render(root, m("ul", [m("li", { key: 0 }), m("li", { key: 1 }), m("li", { key: 2 }), m("li", { key: 3 }), m("li", { key: 4 }), m("li", { key: 5 })]));
-        m.render(root, m("ul", [m("li", { key: 0 }), m("li", { key: 1 }), m("li", { key: 2 }), m("li", { key: 4 }), m("li", { key: 5 })]));
+        m.render(root, m("ul", [m("li", { key: 0 }, 0), m("li", { key: 1 }, 1), m("li", { key: 2 }, 2), m("li", { key: 3 }, 3), m("li", { key: 4 }, 4), m("li", { key: 5 }, 5)]));
+        m.render(root, m("ul", [m("li", { key: 0 }, 0), m("li", { key: 1 }, 1), m("li", { key: 2 }, 2), m("li", { key: 4 }, 4), m("li", { key: 5 }, 5)]));
         return root.childNodes[0].childNodes.map(function (n) {
-            return n.key;
+            return n.childNodes[0].nodeValue;
         }).join("") == "01245";
     });
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/194
         var root = mock.document.createElement("div");
-        m.render(root, m("ul", [m("li", { key: 0 }), m("li", { key: 1 }), m("li", { key: 2 }), m("li", { key: 3 }), m("li", { key: 4 }), m("li", { key: 5 })]));
-        m.render(root, m("ul", [m("li", { key: 1 }), m("li", { key: 2 }), m("li", { key: 3 }), m("li", { key: 4 }), m("li", { key: 5 }), m("li", { key: 6 })]));
-        m.render(root, m("ul", [m("li", { key: 12 }), m("li", { key: 13 }), m("li", { key: 14 }), m("li", { key: 15 }), m("li", { key: 16 }), m("li", { key: 17 })]));
+        m.render(root, m("ul", [m("li", { key: 0 }, 0), m("li", { key: 1 }, 1), m("li", { key: 2 }, 2), m("li", { key: 3 }, 3), m("li", { key: 4 }, 4), m("li", { key: 5 }, 5)]));
+        m.render(root, m("ul", [m("li", { key: 1 }, 1), m("li", { key: 2 }, 2), m("li", { key: 3 }, 3), m("li", { key: 4 }, 4), m("li", { key: 5 }, 5), m("li", { key: 6 }, 6)]));
+        m.render(root, m("ul", [m("li", { key: 12 }, 12), m("li", { key: 13 }, 13), m("li", { key: 14 }, 14), m("li", { key: 15 }, 15), m("li", { key: 16 }, 16), m("li", { key: 17 }, 17)]));
         return root.childNodes[0].childNodes.map(function (n) {
-            return n.key;
+            return n.childNodes[0].nodeValue;
         }).join(",") == "12,13,14,15,16,17";
     });
     test(function () {
@@ -853,6 +888,47 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.render(root, { foo: 123 });
         return root.childNodes.length == 0;
+    });
+    test(function () {
+        //https://github.com/lhorie/mithril.js/issues/299
+        var root = mock.document.createElement("div");
+        m.render(root, m("div", [m("div", { key: 1 }, 1), m("div", { key: 2 }, 2), m("div", { key: 3 }, 3), m("div", { key: 4 }, 4), m("div", { key: 5 }, 5), null, null, null, null, null, null, null, null, null, null]));
+        m.render(root, m("div", [null, null, m("div", { key: 3 }, 3), null, null, m("div", { key: 6 }, 6), null, null, m("div", { key: 9 }, 9), null, null, m("div", { key: 12 }, 12), null, null, m("div", { key: 15 }, 15)]));
+        m.render(root, m("div", [m("div", { key: 1 }, 1), m("div", { key: 2 }, 2), m("div", { key: 3 }, 3), m("div", { key: 4 }, 4), m("div", { key: 5 }, 5), null, null, null, null, null, null, null, null, null, null]));
+        return root.childNodes[0].childNodes.map(function (c) {
+            return c.childNodes ? c.childNodes[0].nodeValue : c.nodeValue;
+        }).slice(0, 5).join("") == "12345";
+    });
+    test(function () {
+        //https://github.com/lhorie/mithril.js/issues/377
+        var root = mock.document.createElement("div");
+        m.render(root, m("div", [m("div", 1), m("div", 2), [m("div", { key: 3 }, 3), m("div", { key: 4 }, 4), m("div", { key: 5 }, 5)], [m("div", { key: 6 }, 6)]]));
+        m.render(root, m("div", [m("div", 1), null, [m("div", { key: 3 }, 3), m("div", { key: 4 }, 4), m("div", { key: 5 }, 5)], [m("div", { key: 6 }, 6)]]));
+        return root.childNodes[0].childNodes.map(function (c) {
+            return c.childNodes ? c.childNodes[0].nodeValue : c.nodeValue;
+        }).slice(0, 5).join("") == "13456";
+    });
+    test(function () {
+        var root = mock.document.createElement("div");
+        m.render(root, m("div", [console.log()])); //don't throw in Firefox
+        return true;
+    });
+    test(function () {
+        var root = mock.document.createElement("div");
+        m.render(root, [
+            m("#div-1", { key: 1 }),
+            m("#div-2", { key: 2 }),
+            m("#div-3", { key: 3 })
+        ]);
+        root.appendChild(root.childNodes[1]);
+        m.render(root, [
+            m("#div-1", { key: 1 }),
+            m("#div-3", { key: 3 }),
+            m("#div-2", { key: 2 })
+        ]);
+        return root.childNodes.map(function (node) {
+            return node.id;
+        }).join() == "div-1,div-3,div-2";
     });
     //end m.render
     //m.redraw
@@ -1164,7 +1240,7 @@ function testMithril(mock) {
         mock.requestAnimationFrame.$resolve();
         m.route("/test14?test&test2=");
         mock.requestAnimationFrame.$resolve(); //teardown
-        return mock.location.search == "?/test14?test&test2=" && m.route.param("test") === true && m.route.param("test2") === "";
+        return mock.location.search == "?/test14?test=&test2=" && m.route.param("test") === "" && m.route.param("test2") === "";
     });
     test(function () {
         mock.requestAnimationFrame.$resolve(); //setup
@@ -1737,6 +1813,30 @@ function testMithril(mock) {
         mock.requestAnimationFrame.$resolve();
         return root.childNodes[0].nodeValue == "b";
     });
+    test(function () {
+        mock.requestAnimationFrame.$resolve();
+        mock.location.search = "?";
+        var root = mock.document.createElement("div");
+        var a = {};
+        a.controller = function () {
+            m.route("/b?foo=1", { foo: 2 });
+        };
+        a.view = function () {
+            return "a";
+        };
+        var b = {};
+        b.controller = function () {
+        };
+        b.view = function () {
+            return "b";
+        };
+        m.route(root, "/", {
+            "/": a,
+            "/b": b
+        });
+        mock.requestAnimationFrame.$resolve();
+        return mock.location.search == "?/b?foo=2";
+    });
     //end m.route
     //m.prop
     test(function () {
@@ -1859,6 +1959,11 @@ function testMithril(mock) {
         var prop = m.request({ method: "POST", url: "test", data: { foo: 1 } });
         mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
         return prop().url === "test";
+    });
+    test(function () {
+        var prop = m.request({ method: "GET", url: "test", data: { foo: [1, 2] } });
+        mock.XMLHttpRequest.$instances.pop().onreadystatechange(null);
+        return prop().url === "test?foo%5B%5D=1&foo%5B%5D=2";
     });
     // m.request over jsonp
     test(function () {
