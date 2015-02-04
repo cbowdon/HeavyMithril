@@ -1,26 +1,4 @@
-/// <reference path="mithril.d.ts" />
-/// <reference path="mithril-mock.d.ts" />
-
-interface Test {
-    (act: () => boolean): any;
-    (act: () => Mithril.VirtualElement): any;
-    print: (value: any) => any;
-}
-
-interface Node {
-    key: any; // string | number
-}
-
-interface NodeList extends Array<Node> { }
-
-declare var test: Test;
-
-interface TestCtrl extends Mithril.Controller {
-    value?: string;
-    number?: number;
-}
-
-function testMithril(mock: Mithril.MockWindow) {
+function testMithril(mock) {
 	m.deps(mock)
 
 	//m
@@ -61,13 +39,13 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.requestAnimationFrame.$resolve()
 
 		var root1 = mock.document.createElement("div")
-		var mod1 = m.module<TestCtrl>(root1, {
+		var mod1 = m.module(root1, {
 			controller: function() {this.value = "test1"},
 			view: function(ctrl) {return ctrl.value}
 		})
 
 		var root2 = mock.document.createElement("div")
-		var mod2 = m.module<TestCtrl>(root2, {
+		var mod2 = m.module(root2, {
 			controller: function() {this.value = "test2"},
 			view: function(ctrl) {return ctrl.value}
 		})
@@ -105,10 +83,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	test(function() {
 		var value
 		var handler = m.withAttr("test", function(data) {value = data})
-        //TS faking an event with a dynamic extra property
-        var el = document.createElement("div")
-        var evt = { currentTarget: Object.defineProperty(el, "test", { value: "foo" }) }
-		handler(evt)
+		handler({currentTarget: {test: "foo"}})
 		return value === "foo"
 	})
 
@@ -265,13 +240,13 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 		m.render(root, m("#foo", [m("#bar")]))
 		m.render(root, m("#foo", [m("#bar"), [m("#baz")]]))
-		return (<HTMLElement>root.childNodes[0].childNodes[1]).id === "baz"
+		return root.childNodes[0].childNodes[1].id === "baz"
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/48
 		var root = mock.document
 		m.render(root, m("html", [m("#foo")]))
-		var result = (<HTMLElement>root.childNodes[0].childNodes[0]).id === "foo"
+		var result = root.childNodes[0].childNodes[0].id === "foo"
 		root.childNodes = [mock.document.createElement("html")]
 		return result
 	})
@@ -320,7 +295,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		//https://github.com/lhorie/mithril.js/issues/50
 		var root = mock.document.createElement("div")
 		m.render(root, m("#foo", [[m("div", "a"), m("div", "b")], [m("div", "c"), m("div", "d")], m("#bar")]))
-		return root.childNodes[0].childNodes[3].childNodes[0].nodeValue === "d" && (<HTMLElement>root.childNodes[0].childNodes[4]).id === "bar"
+		return root.childNodes[0].childNodes[3].childNodes[0].nodeValue === "d" && root.childNodes[0].childNodes[4].id === "bar"
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/50
@@ -399,33 +374,32 @@ function testMithril(mock: Mithril.MockWindow) {
 		//https://github.com/lhorie/mithril.js/issues/79
 		var root = mock.document.createElement("div")
 		m.render(root, m("div", {style: {background: "red"}}))
-		var valueBefore = (<HTMLElement>root.childNodes[0]).style.background
+		var valueBefore = root.childNodes[0].style.background
 		m.render(root, m("div", {style: {}}))
-		var valueAfter = (<HTMLElement>root.childNodes[0]).style.background
+		var valueAfter = root.childNodes[0].style.background
 		return valueBefore === "red" && valueAfter === ""
 	})
 	test(function() {
 		var root = mock.document.createElement("div")
 		m.render(root, m("div[style='background:red']"))
-        //TS Apparently strings not ok here in a real window? So say TSLib
-		return (<any>root.childNodes[0]).style === "background:red"
+		return root.childNodes[0].style === "background:red"
 	})
 	test(function() {
 		var root = mock.document.createElement("div")
 		m.render(root, m("div", {style: {background: "red"}}))
-		var valueBefore = (<HTMLElement>root.childNodes[0]).style.background
+		var valueBefore = root.childNodes[0].style.background
 		m.render(root, m("div", {}))
-		var valueAfter = (<HTMLElement>root.childNodes[0]).style.background
+		var valueAfter = root.childNodes[0].style.background
 		return valueBefore === "red" && valueAfter === undefined
 	})
 	test(function() {
 		var root = mock.document.createElement("div")
-		var module: any = {}, unloaded = false
+		var module = {}, unloaded = false
 		module.controller = function() {
 			this.onunload = function() {unloaded = true}
 		}
 		module.view = function() {}
-		m.module(root, <Mithril.Module<Mithril.Controller>>module)
+		m.module(root, module)
 		m.module(root, {controller: function() {}, view: function() {}})
 		return unloaded === true
 	})
@@ -644,7 +618,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		//https://github.com/lhorie/mithril.js/issues/134
 		var root = mock.document.createElement("div")
 		m.render(root, m("div", {contenteditable: true}, "test"))
-		mock.document.activeElement = <Element>root.childNodes[0]
+		mock.document.activeElement = root.childNodes[0]
 		m.render(root, m("div", {contenteditable: true}, "test1"))
 		m.render(root, m("div", {contenteditable: false}, "test2"))
 		return root.childNodes[0].childNodes[0].nodeValue === "test2"
@@ -654,7 +628,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 		m.render(root, m("textarea", ["test"]))
 		m.render(root, m("textarea", ["test1"]))
-		return (<HTMLTextAreaElement>root.childNodes[0]).value === "test1"
+		return root.childNodes[0].value === "test1"
 	})
 	test(function() {
 		var root = mock.document.createElement("div")
@@ -876,7 +850,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.requestAnimationFrame.$resolve() //setup
 		var controller
 		var root = mock.document.createElement("div")
-		m.module<TestCtrl>(root, {
+		m.module(root, {
 			controller: function() {controller = this},
 			view: function(ctrl) {return ctrl.value}
 		})
@@ -959,7 +933,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.requestAnimationFrame.$resolve() //teardown
 		return mock.location.pathname == "/test2" &&
 			root.childNodes[0].nodeValue === "foo" &&
-			(<HTMLLinkElement>root.childNodes[1]).href == "/test2"
+			root.childNodes[1].href == "/test2"
 	})
 	test(function() {
 		mock.requestAnimationFrame.$resolve() //setup
@@ -1546,9 +1520,9 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.location.search = "?"
 
 		var root = mock.document.createElement("div")
-		var strategy: string
+		var strategy
 		m.route.mode = "search"
-		m.route<TestCtrl>(root, "/foo1", {
+		m.route(root, "/foo1", {
 			"/foo1": {
 				controller: function() {this.number = 1},
 				view: function(ctrl) {
@@ -1560,7 +1534,7 @@ function testMithril(mock: Mithril.MockWindow) {
 				}
 			}
 		})
-		;(<HTMLElement>root.childNodes[0]).onclick(null)
+		root.childNodes[0].onclick({})
 		mock.requestAnimationFrame.$resolve() //teardown
 		return strategy == "diff" && root.childNodes[0].childNodes[0].nodeValue == "1"
 	})
@@ -1572,7 +1546,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var count = 0
 		var config = function(el, init ) {if (!init) count++}
 		m.route.mode = "search"
-		m.route<TestCtrl>(root, "/foo1", {
+		m.route(root, "/foo1", {
 			"/foo1": {
 				controller: function() {},
 				view: function(ctrl) {
@@ -1582,7 +1556,7 @@ function testMithril(mock: Mithril.MockWindow) {
 				}
 			}
 		})
-		;(<HTMLElement>root.childNodes[0]).onclick(null)
+		root.childNodes[0].onclick({})
 		mock.requestAnimationFrame.$resolve() //teardown
 		return count == 2
 	})
@@ -1628,7 +1602,7 @@ function testMithril(mock: Mithril.MockWindow) {
 			"/test23": {controller: function() {}, view: function() {return "bar"}}
 		})
 		mock.requestAnimationFrame.$resolve()
-		m.route(<string>new String("/test23/"))
+		m.route(new String("/test23/"))
 		mock.requestAnimationFrame.$resolve() //teardown
 		return mock.location.search == "?/test23/" && root.childNodes[0].nodeValue === "bar"
 	})
@@ -1654,7 +1628,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var value
-		m.route(root, <string>new String("/foo+bar"), {
+		m.route(root, new String("/foo+bar"), {
 			"/:arg": {
 				controller: function() {value = m.route.param("arg")},
 				view: function(ctrl) {
@@ -1670,17 +1644,17 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 
-		var a: any = {}
+		var a = {}
 		a.controller = function() {m.route("/b")}
 		a.view = function() {return "a"}
 
-		var b: any = {}
+		var b = {}
 		b.controller = function() {}
 		b.view = function(ctrl) {return "b"}
 
-		m.route<TestCtrl>(root, "/a", {
-			"/a": <Mithril.Module<TestCtrl>>a,
-			"/b": <Mithril.Module<TestCtrl>>b
+		m.route(root, "/a", {
+			"/a": a,
+			"/b": b
 		})
 		mock.requestAnimationFrame.$resolve()
 
@@ -1731,7 +1705,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		return JSON.stringify(obj) === '{"prop":"test"}'
 	})
 	test(function() {
-		var defer = m.deferred<string>()
+		var defer = m.deferred()
 		var prop = m.prop(defer.promise)
 		defer.resolve("test")
 
@@ -1753,35 +1727,35 @@ function testMithril(mock: Mithril.MockWindow) {
 
 	//m.request
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "GET", url: "test"})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		var prop = m.request({method: "GET", url: "test"})
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop().method === "GET" && prop().url === "test"
 	})
 	test(function() {
 		var prop = m.request({method: "GET", url: "test"}).then(function(value) {return "foo"})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop() === "foo"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "POST", url: "http://domain.com:80", data: {}}).then(function(value) {return value})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		var prop = m.request({method: "POST", url: "http://domain.com:80", data: {}}).then(function(value) {return value})
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop().url === "http://domain.com:80"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "POST", url: "http://domain.com:80/:test1", data: {test1: "foo"}}).then(function(value) {return value})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		var prop = m.request({method: "POST", url: "http://domain.com:80/:test1", data: {test1: "foo"}}).then(function(value) {return value})
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop().url === "http://domain.com:80/foo"
 	})
 	test(function() {
-		var error = m.prop<any>("no error")
+		var error = m.prop("no error")
 		var prop = m.request({method: "GET", url: "test", deserialize: function() {throw new Error("error occurred")}}).then(null, error)
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop().message === "error occurred" && error().message === "error occurred"
 	})
 	test(function() {
-		var error = m.prop("no error"), exception: Error
+		var error = m.prop("no error"), exception
 		var prop = m.request({method: "GET", url: "test", deserialize: function() {throw new TypeError("error occurred")}}).then(null, error)
-		try {mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)}
+		try {mock.XMLHttpRequest.$instances.pop().onreadystatechange()}
 		catch (e) {exception = e}
 		m.endComputation()
 		return prop() === undefined && error() === "no error" && exception.message == "error occurred"
@@ -1790,41 +1764,41 @@ function testMithril(mock: Mithril.MockWindow) {
 		var error = m.prop("no error")
 		var prop = m.request({method: "POST", url: "test", data: {foo: 1}}).then(null, error)
 		var xhr = mock.XMLHttpRequest.$instances.pop()
-		xhr.onreadystatechange(null)
+		xhr.onreadystatechange()
 		return xhr.$headers["Content-Type"] == "application/json; charset=utf-8"
 	})
 	test(function() {
 		var error = m.prop("no error")
 		var prop = m.request({method: "POST", url: "test"}).then(null, error)
 		var xhr = mock.XMLHttpRequest.$instances.pop()
-		xhr.onreadystatechange(null)
+		xhr.onreadystatechange()
 		return xhr.$headers["Content-Type"] === undefined
 	})
 	test(function() {
 		var prop = m.request({method: "POST", url: "test", initialValue: "foo"})
 		var initialValue = prop();
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 
 		return initialValue === "foo"
 	})
 	test(function() {
 		var prop = m.request({method: "POST", url: "test", initialValue: "foo"}).then(function(value) {return "bar"})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop() === "bar"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "GET", url: "test", data: {foo: 1}})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		var prop = m.request({method: "GET", url: "test", data: {foo: 1}})
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop().url === "test?foo=1"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "POST", url: "test", data: {foo: 1}})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		var prop = m.request({method: "POST", url: "test", data: {foo: 1}})
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop().url === "test"
 	})
 	test(function() {
 		var prop = m.request({method: "GET", url: "test", data: {foo: [1, 2]}})
-		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
+		mock.XMLHttpRequest.$instances.pop().onreadystatechange()
 		return prop().url === "test?foo%5B%5D=1&foo%5B%5D=2"
 	})
 
@@ -1837,7 +1811,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var	error = m.prop("no error")
 		var data
-		var req = m.request({url: "/test", dataType: "jsonp"}).then(function(received) {data = received; return data}, error)
+		var req = m.request({url: "/test", dataType: "jsonp"}).then(function(received) {data = received}, error)
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
@@ -1856,7 +1830,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var	error = m.prop("no error")
 		var data
-		var req = m.request({url: "/test", dataType: "jsonp", callbackKey: "jsonpCallback"}).then(function(received) {data = received; return data}, error);
+		var req = m.request({url: "/test", dataType: "jsonp", callbackKey: "jsonpCallback"}).then(function(received) {data = received}, error);
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
@@ -1963,10 +1937,9 @@ function testMithril(mock: Mithril.MockWindow) {
 		//2) A+ swallows exceptions in a unrethrowable way, i.e. it's not possible to see default error messages on the console for runtime errors thrown from within a promise chain
 		var value1, value2, value3
 		var deferred = m.deferred()
-        var foo
 		try {
 			deferred.promise
-				.then(function(data) {foo["bar"]["baz"]}) //throws ReferenceError
+				.then(function(data) {foo.bar.baz}) //throws ReferenceError
 				.then(function(data) {value1 = 1}, function(data) {value2 = data})
 			deferred.resolve("test")
 		}
@@ -2040,7 +2013,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
 		var deferred = m.deferred(), value1, value2
-		deferred.promise.then(function(data) {
+		deferred.promise.then(function() {
 			value1 = data
 		}, function(data) {
 			value2 = data
@@ -2083,7 +2056,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		return deferred.promise() === 1
 	})
 	test(function() {
-		var deferred = m.deferred<number>(), value
+		var deferred = m.deferred(), value
 		var promise = deferred.promise.then(function(data) {return data + 1})
 		deferred.resolve(1)
 		return promise() === 2
@@ -2129,7 +2102,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.requestAnimationFrame.$resolve()
 
 		var root = mock.document.createElement("div")
-		var controller = m.module<TestCtrl>(root, {
+		var controller = m.module(root, {
 			controller: function() {},
 			view: function(ctrl) {return ctrl.value}
 		})

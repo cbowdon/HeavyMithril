@@ -1,6 +1,5 @@
 all: *.ts
-	tsc $^ --noImplicitAny --sourceMap --module commonjs
-	#tsc $^ --sourceMap --module commonjs
+	tsc $^ --sourceMap --module commonjs #--noImplicitAny
 
 watch: *.ts
 	tsc $^ --noImplicitAny --sourceMap --watch
