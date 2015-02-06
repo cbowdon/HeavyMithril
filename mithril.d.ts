@@ -89,7 +89,7 @@ declare module Mithril {
     }
 
     interface ElementConfig {
-        (element: Element, isInitialized: boolean, context: any): void;
+        (element: Element, isInitialized: boolean, context?: any): void;
     }
 
     // Attributes on a virtual element

@@ -794,7 +794,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 
 		var unloaded1 = false
-		function unloadable1(element, isInit, context) {
+		var unloadable1: Mithril.ElementConfig = function (element, isInit, context) {
 			context.onunload = function() {
 				unloaded1 = true
 			}
@@ -803,7 +803,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		m.render(root, [ ])
 
 		var unloaded2 = false
-		function unloadable2(element, isInit, context) {
+		var unloadable2: Mithril.ElementConfig = function (element, isInit, context) {
 			context.onunload = function() {
 				unloaded2 = true
 			}
@@ -875,7 +875,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	//m.redraw
 	test(function() {
 		mock.requestAnimationFrame.$resolve() //setup
-		var controller
+		var controller: TestCtrl
 		var root = mock.document.createElement("div")
 		m.module<TestCtrl>(root, {
 			controller: function() {controller = this},
@@ -1175,7 +1175,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.location.search = "?"
 
 		var root = mock.document.createElement("div")
-		var route1, route2
+		var route1: string, route2: string
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {controller: function() {route1 = m.route()}, view: function() {}},
@@ -1466,7 +1466,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var unloaded = 0
-		var config = function(el, init, ctx) {
+		var config: Mithril.ElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloaded++
 			}
@@ -1498,7 +1498,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 		var strategy
 		m.route.mode = "search"
-		m.route(root, "/foo1", {
+		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
 				controller: function() {
 					strategy = m.redraw.strategy()
@@ -1518,9 +1518,9 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var strategy, count = 0
-		var config = function(el, init) {if (!init) count++}
+		var config: Mithril.ElementConfig = function(el, init) {if (!init) count++}
 		m.route.mode = "search"
-		m.route(root, "/foo1", {
+		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
 				controller: function() {},
 				view: function() {
@@ -1571,7 +1571,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var count = 0
-		var config = function(el, init ) {if (!init) count++}
+		var config: Mithril.ElementConfig = function(el, init ) {if (!init) count++}
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
@@ -1677,7 +1677,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var b: any = {}
 		b.controller = function() {}
-		b.view = function(ctrl) {return "b"}
+		b.view = function(ctrl: TestCtrl) {return "b"}
 
 		m.route<TestCtrl>(root, "/a", {
 			"/a": <Mithril.Module<TestCtrl>>a,
@@ -1842,7 +1842,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
-		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script){
+		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script: HTMLScriptElement){
 			return script.src.indexOf(callbackKey) > -1
 		}).pop()
 		mock[callbackKey]({foo: "bar"})
@@ -1861,7 +1861,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
-		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script){
+		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script: HTMLScriptElement){
 			return script.src.indexOf(callbackKey) > -1
 		}).pop()
 		mock[callbackKey]({foo: "bar1"})
@@ -1877,7 +1877,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
-		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script){
+		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script: HTMLScriptElement){
 			return script.src.indexOf(callbackKey) > -1
 		}).pop();
 		mock[callbackKey]({foo: "bar1"})
@@ -1894,7 +1894,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
-		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script){
+		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script: HTMLScriptElement){
 			return script.src.indexOf(callbackKey) > -1
 		}).pop();
 		mock[callbackKey]({foo: "bar"})
@@ -1911,7 +1911,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
-		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script){
+		var scriptTag = [].slice.call(mock.document.getElementsByTagName("script")).filter(function(script: HTMLScriptElement){
 			return script.src.indexOf(callbackKey) > -1
 		}).pop();
 		mock[callbackKey]({foo: "bar"})
@@ -2160,12 +2160,12 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var idx = 0;
 		var success = true;
-		var statefulConfig = function(elem, isInitialized, ctx) {ctx.data=idx++}
+		var statefulConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {ctx.data=idx++}
 		var node = m("div", {config: statefulConfig});
 		m.render(root, [node, node]);
 
 		idx = 0;
-		var checkConfig = function(elem, isInitialized, ctx) {
+		var checkConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {
 			success = success && (ctx.data === idx++)
 		}
 		node = m("div", {config: checkConfig});

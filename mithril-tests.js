@@ -850,19 +850,19 @@ function testMithril(mock) {
         //https://github.com/lhorie/mithril.js/issues/200
         var root = mock.document.createElement("div");
         var unloaded1 = false;
-        function unloadable1(element, isInit, context) {
+        var unloadable1 = function (element, isInit, context) {
             context.onunload = function () {
                 unloaded1 = true;
             };
-        }
+        };
         m.render(root, [m("div", { config: unloadable1 })]);
         m.render(root, []);
         var unloaded2 = false;
-        function unloadable2(element, isInit, context) {
+        var unloadable2 = function (element, isInit, context) {
             context.onunload = function () {
                 unloaded2 = true;
             };
-        }
+        };
         m.render(root, [m("div", { config: unloadable2 })]);
         m.render(root, []);
         return unloaded1 === true && unloaded2 === true;
