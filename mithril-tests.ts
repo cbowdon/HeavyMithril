@@ -1946,8 +1946,8 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		var value: string
-		var deferred = m.deferred()
-		deferred.promise.then(null, function(data) {return "foo"}).then(function(data) {value = data})
+		var deferred = m.deferred<string>()
+		deferred.promise.then<string,string>(null, function(data) {return "foo"}).then(function(data) {value = data})
 		deferred.reject("test")
 		return value === "foo"
 	})

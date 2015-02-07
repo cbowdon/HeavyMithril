@@ -66,8 +66,10 @@ declare module Mithril {
     interface Promise<T> {
         (): T;
         (value: T): T;
-        then<U,V>(success: (value: T) => U, error?: (value: Error) => V): Promise<U>;
-        then<U,V>(success: (value: T) => Promise<U>, error?: (value: Error) => V): Promise<U>;
+        then<U>(success: (value: T) => U): Promise<U>;
+        then<U>(success: (value: T) => Promise<U>): Promise<U>;
+        then<U,V>(success: (value: T) => U, error: (value: Error) => V): Promise<U>|Promise<V>;
+        then<U,V>(success: (value: T) => Promise<U>, error: (value: Error) => V): Promise<U>|Promise<V>;
     }
 
     interface Property<T> {
