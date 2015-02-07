@@ -7,14 +7,13 @@ interface Test {
     print: (value: any) => any;
 }
 
+declare var test: Test;
+
 interface Node {
     id: string;
     key: string|number;
 }
-
 interface NodeList extends Array<Node> { }
-
-declare var test: Test;
 
 interface TestCtrl extends Mithril.Controller {
     value?: string;
@@ -104,7 +103,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 	//m.withAttr
 	test(function() {
-		var value
+		var value: string
 		var handler = m.withAttr("test", function(data) {value = data})
         //TS faking an event with a dynamic extra property
         var el = document.createElement("div")
@@ -534,7 +533,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		var root = mock.document.createElement("div")
-		var parent
+		var parent: Node
 		m.render(root, m("div", m("a", {
 			config: function(el) {parent = el.parentNode.parentNode}
 		})));
@@ -1496,7 +1495,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.location.search = "?"
 
 		var root = mock.document.createElement("div")
-		var strategy
+		var strategy: string
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
@@ -1517,7 +1516,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.location.search = "?"
 
 		var root = mock.document.createElement("div")
-		var strategy, count = 0
+		var strategy: string, count = 0
 		var config: Mithril.ElementConfig = function(el, init) {if (!init) count++}
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
@@ -1592,7 +1591,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.location.search = "?"
 
 		var root = mock.document.createElement("div")
-		var value
+		var value: string
 		m.route(root, "/foo+bar", {
 			"/:arg": {
 				controller: function() {value = m.route.param("arg")},
@@ -1638,7 +1637,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.location.search = "?"
 
 		var root = mock.document.createElement("div")
-		var value
+		var value: string
 		m.route(root, String("/foo+bar"), {
 			"/:arg": {
 				controller: function() {value = m.route.param("arg")},
@@ -1654,7 +1653,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.location.search = "?"
 
 		var root = mock.document.createElement("div")
-		var value
+		var value: string
 		m.route(root, <string>new String("/foo+bar"), {
 			"/:arg": {
 				controller: function() {value = m.route.param("arg")},
@@ -1921,35 +1920,35 @@ function testMithril(mock: Mithril.MockWindow) {
 
 	//m.deferred
 	test(function() {
-		var value
+		var value: string|Object
 		var deferred = m.deferred()
 		deferred.promise.then(function(data) {value = data})
 		deferred.resolve("test")
 		return value === "test"
 	})
 	test(function() {
-		var value
+		var value: string
 		var deferred = m.deferred()
 		deferred.promise.then(function(data) {return "foo"}).then(function(data) {value = data})
 		deferred.resolve("test")
 		return value === "foo"
 	})
 	test(function() {
-		var value
+		var value: string|Error
 		var deferred = m.deferred()
 		deferred.promise.then(null, function(data) {value = data})
 		deferred.reject("test")
 		return value === "test"
 	})
 	test(function() {
-		var value
+		var value: string
 		var deferred = m.deferred()
 		deferred.promise.then(null, function(data) {return "foo"}).then(function(data) {value = data})
 		deferred.reject("test")
 		return value === "foo"
 	})
 	test(function() {
-		var value1, value2
+		var value1: number, value2: Error
 		var deferred = m.deferred()
 		deferred.promise.then(function(data) {throw new Error}).then(function(data) {value1 = 1}, function(data) {value2 = data})
 		deferred.resolve("test")
@@ -1962,7 +1961,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		//This test tests two implementation details that differ from the Promises/A+ spec:
 		//1) A+ requires the `then` callback to be called in a different event loop from the resolve call, i.e. it must be asynchronous (this requires a setImmediate polyfill, which cannot be implemented in a reasonable way for Mithril's purpose - the possible polyfills are either too big or too slow)
 		//2) A+ swallows exceptions in a unrethrowable way, i.e. it's not possible to see default error messages on the console for runtime errors thrown from within a promise chain
-		var value1, value2, value3
+		var value1: number, value2: Error, value3: Error
 		var deferred = m.deferred()
         var foo
 		try {

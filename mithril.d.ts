@@ -20,8 +20,9 @@ declare module Mithril {
 
         trust(html: string): string;
 
-        render(rootElement: Element, children?: any, forceRecreation?: boolean): void;
-        render(rootElement: HTMLDocument, children?: any, forceRecreation?: boolean): void;
+        render(rootElement: Element|HTMLDocument): void;
+        render(rootElement: Element|HTMLDocument, children: VirtualElement, forceRecreation?: boolean): void;
+        render(rootElement: Element|HTMLDocument, children: VirtualElement[], forceRecreation?: boolean): void;
 
         redraw: RedrawStatic;
 
