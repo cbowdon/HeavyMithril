@@ -1967,7 +1967,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		//2) A+ swallows exceptions in a unrethrowable way, i.e. it's not possible to see default error messages on the console for runtime errors thrown from within a promise chain
 		var value1: number, value2: Error, value3: Error
 		var deferred = m.deferred()
-        var foo: {}
+        var foo: any
 		try {
 			deferred.promise
 				.then(function(data) {foo["bar"]["baz"]}) //throws ReferenceError
@@ -2100,18 +2100,18 @@ function testMithril(mock: Mithril.MockWindow) {
 
 	//m.sync
 	test(function() {
-		var value: string[]|{}
-		var deferred1 = m.deferred()
-		var deferred2 = m.deferred()
+		var value: string[]
+		var deferred1 = m.deferred<string>()
+		var deferred2 = m.deferred<string>()
 		m.sync([deferred1.promise, deferred2.promise]).then(function(data) {value = data})
 		deferred1.resolve("test")
 		deferred2.resolve("foo")
 		return value[0] === "test" && value[1] === "foo"
 	})
 	test(function() {
-		var value: string[]|{}
-		var deferred1 = m.deferred()
-		var deferred2 = m.deferred()
+		var value: string[]
+		var deferred1 = m.deferred<string>()
+		var deferred2 = m.deferred<string>()
 		m.sync([deferred1.promise, deferred2.promise]).then(function(data) {value = data})
 		deferred2.resolve("foo")
 		deferred1.resolve("test")

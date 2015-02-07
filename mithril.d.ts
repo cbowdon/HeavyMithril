@@ -32,7 +32,7 @@ declare module Mithril {
 
         deferred: DeferredStatic;
 
-        sync<T>(promises: Promise<T>[]): Promise<T>;
+        sync<T>(promises: Promise<T>[]): Promise<T[]>;
 
         startComputation(): void;
 

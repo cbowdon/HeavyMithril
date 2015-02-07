@@ -7,6 +7,7 @@ declare module Mithril {
   }
 
   interface MockWindow extends Window {
+      [id: string]: any;
       requestAnimationFrame: RequestAnimationFrame;
       XMLHttpRequest: XMLHttpRequest;
   }
