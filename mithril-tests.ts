@@ -20,6 +20,10 @@ interface TestCtrl extends Mithril.Controller {
     number?: number;
 }
 
+interface TestData {
+    foo: string;
+}
+
 function testMithril(mock: Mithril.MockWindow) {
 	m.deps(mock)
 
@@ -1836,8 +1840,8 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.document.appendChild(body)
 
 		var	error = m.prop("no error")
-		var data
-		var req = m.request({url: "/test", dataType: "jsonp"}).then(function(received) {data = received; return data}, error)
+		var data: TestData
+		var req = m.request<TestData>({url: "/test", dataType: "jsonp"}).then(function(received) {data = received; return data}, error)
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
@@ -1855,8 +1859,8 @@ function testMithril(mock: Mithril.MockWindow) {
 		mock.document.appendChild(body)
 
 		var	error = m.prop("no error")
-		var data
-		var req = m.request({url: "/test", dataType: "jsonp", callbackKey: "jsonpCallback"}).then(function(received) {data = received; return data}, error);
+		var data: TestData
+		var req = m.request<TestData>({url: "/test", dataType: "jsonp", callbackKey: "jsonpCallback"}).then(function(received) {data = received; return data}, error);
 		var callbackKey = Object.keys(mock).filter(function(globalKey){
 			return globalKey.indexOf("mithril_callback") > -1
 		}).pop()
@@ -1963,7 +1967,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		//2) A+ swallows exceptions in a unrethrowable way, i.e. it's not possible to see default error messages on the console for runtime errors thrown from within a promise chain
 		var value1: number, value2: Error, value3: Error
 		var deferred = m.deferred()
-        var foo
+        var foo: {}
 		try {
 			deferred.promise
 				.then(function(data) {foo["bar"]["baz"]}) //throws ReferenceError
@@ -1976,7 +1980,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	test(function() {
 		var deferred1 = m.deferred()
 		var deferred2 = m.deferred()
-		var value1, value2
+		var value1: number|{}, value2: number|{}
 		deferred1.promise.then(function(data) {
 			value1 = data
 			return deferred2.promise
@@ -1989,7 +1993,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
-		var deferred = m.deferred(), value
+		var deferred = m.deferred(), value: number|{}
 		deferred.resolve(1)
 		deferred.promise.then(function(data) {
 			value = data
@@ -1998,7 +2002,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
-		var deferred = m.deferred(), value
+		var deferred = m.deferred(), value: number|Error
 		deferred.reject(1)
 		deferred.promise.then(null, function(data) {
 			value = data
@@ -2007,7 +2011,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
-		var deferred = m.deferred(), value
+		var deferred = m.deferred(), value: number|{}
 		deferred.resolve(1)
 		deferred.resolve(2)
 		deferred.promise.then(function(data) {
@@ -2017,7 +2021,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
-		var deferred = m.deferred(), value
+		var deferred = m.deferred(), value: number|{}
 		deferred.promise.then(function(data) {
 			value = data
 		})
@@ -2027,7 +2031,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
-		var deferred = m.deferred(), value1, value2
+		var deferred = m.deferred(), value1: number|{}, value2: number|Error
 		deferred.promise.then(function(data) {
 			value1 = data
 		}, function(data) {
@@ -2039,7 +2043,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
-		var deferred = m.deferred(), value1, value2
+		var deferred = m.deferred(), value1: number|{}, value2: number|Error
 		deferred.promise.then(function(data) {
 			value1 = data
 		}, function(data) {
@@ -2051,7 +2055,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/80
-		var deferred = m.deferred(), value
+		var deferred = m.deferred(), value: number|Error
 		deferred.promise.then(null, function(data) {
 			value = data
 		})
@@ -2061,7 +2065,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/85
-		var deferred = m.deferred(), value
+		var deferred = m.deferred(), value: number
 		deferred.resolve()
 		deferred.promise.then(function(data) {
 			value = 1
@@ -2070,7 +2074,7 @@ function testMithril(mock: Mithril.MockWindow) {
 	})
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/85
-		var deferred = m.deferred(), value
+		var deferred = m.deferred(), value: number|Error
 		deferred.reject()
 		deferred.promise.then(null, function(data) {
 			value = 1
@@ -2078,25 +2082,25 @@ function testMithril(mock: Mithril.MockWindow) {
 		return value === 1
 	})
 	test(function() {
-		var deferred = m.deferred(), value
+		var deferred = m.deferred()
 		deferred.resolve(1)
 		return deferred.promise() === 1
 	})
 	test(function() {
-		var deferred = m.deferred<number>(), value
+		var deferred = m.deferred<number>()
 		var promise = deferred.promise.then(function(data) {return data + 1})
 		deferred.resolve(1)
 		return promise() === 2
 	})
 	test(function() {
-		var deferred = m.deferred(), value
+		var deferred = m.deferred()
 		deferred.reject(1)
 		return deferred.promise() === undefined
 	})
 
 	//m.sync
 	test(function() {
-		var value
+		var value: string[]|{}
 		var deferred1 = m.deferred()
 		var deferred2 = m.deferred()
 		m.sync([deferred1.promise, deferred2.promise]).then(function(data) {value = data})
@@ -2105,7 +2109,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		return value[0] === "test" && value[1] === "foo"
 	})
 	test(function() {
-		var value
+		var value: string[]|{}
 		var deferred1 = m.deferred()
 		var deferred2 = m.deferred()
 		m.sync([deferred1.promise, deferred2.promise]).then(function(data) {value = data})
@@ -2119,7 +2123,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		return value == 2
 	})
 	test(function() {
-		var success
+		var success: boolean
 		m.sync([]).then(function(value) {success = value instanceof Array})
 		return success
 	})
@@ -2184,4 +2188,4 @@ function testMithril(mock: Mithril.MockWindow) {
 //mock
 testMithril(mock.window);
 
-test.print(function(value) {console.log(value)})
+test.print(function(value: string) {console.log(value)})

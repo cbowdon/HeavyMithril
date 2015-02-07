@@ -2239,12 +2239,12 @@ function testMithril(mock) {
         return value === 1;
     });
     test(function () {
-        var deferred = m.deferred(), value;
+        var deferred = m.deferred();
         deferred.resolve(1);
         return deferred.promise() === 1;
     });
     test(function () {
-        var deferred = m.deferred(), value;
+        var deferred = m.deferred();
         var promise = deferred.promise.then(function (data) {
             return data + 1;
         });
@@ -2252,7 +2252,7 @@ function testMithril(mock) {
         return promise() === 2;
     });
     test(function () {
-        var deferred = m.deferred(), value;
+        var deferred = m.deferred();
         deferred.reject(1);
         return deferred.promise() === undefined;
     });
