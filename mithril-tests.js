@@ -1,5 +1,13 @@
 /// <reference path="mithril.d.ts" />
 /// <reference path="mithril-mock.d.ts" />
+var Field = (function () {
+    function Field() {
+        this.tag = "div";
+        this.attrs = {};
+        this.children = "hello";
+    }
+    return Field;
+})();
 function testMithril(mock) {
     m.deps(mock);
     //m
@@ -876,11 +884,12 @@ function testMithril(mock) {
     test(function () {
         //https://github.com/lhorie/mithril.js/issues/277
         var root = mock.document.createElement("div");
-        function Field() {
-            this.tag = "div";
-            this.attrs = {};
-            this.children = "hello";
-        }
+        // TS seems to hate inline definition of Field class, defined above
+        //function Field() {
+        //  this.tag = "div";
+        //  this.attrs = {};
+        //	this.children = "hello";
+        //}
         m.render(root, new Field());
         return root.childNodes.length == 1;
     });

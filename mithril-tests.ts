@@ -24,6 +24,17 @@ interface TestData {
     foo: string;
 }
 
+class Field implements Mithril.VirtualElement {
+    tag: string;
+    attrs: Mithril.Attributes;
+    children: any;
+    constructor() {
+        this.tag = "div";
+        this.attrs = {};
+        this.children = "hello";
+    }
+}
+
 function testMithril(mock: Mithril.MockWindow) {
 	m.deps(mock)
 
@@ -825,11 +836,12 @@ function testMithril(mock: Mithril.MockWindow) {
 	test(function() {
 		//https://github.com/lhorie/mithril.js/issues/277
 		var root = mock.document.createElement("div")
-		function Field() {
-			this.tag = "div";
-			this.attrs = {};
-			this.children = "hello";
-		}
+        // TS seems to hate inline definition of Field class, defined above
+		//function Field() {
+	    //  this.tag = "div";
+	    //  this.attrs = {};
+		//	this.children = "hello";
+		//}
 		m.render(root, new Field())
 		return root.childNodes.length == 1
 	})
