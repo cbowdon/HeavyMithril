@@ -14,6 +14,7 @@ interface MithrilStatic {
     withAttr(property: string, callback: (value: any) => void): (e: MithrilEvent) => any;
 
     module<T extends MithrilController>(rootElement: Node, module: MithrilModule<T>): T;
+    module<T extends MithrilController>(rootElement: Node): T;
 
     trust(html: string): string;
 
@@ -128,12 +129,12 @@ interface MithrilRouteStatic {
     <T extends MithrilController>(rootElement: HTMLDocument, defaultRoute: string, routes: MithrilRoutes<T>): void;
     <T extends MithrilController>(rootElement: Element, defaultRoute: string, routes: MithrilRoutes<T>): void;
 
+    (element: Element, isInitialized: boolean): void;
     (path: string, params?: any, shouldReplaceHistory?: boolean): void;
     (): string;
-    (element: Element, isInitialized: boolean): void;
 
+    param(key: string): string;
     mode: string;
-    param(key: string): any;
 }
 
 interface MithrilRedrawStatic {
