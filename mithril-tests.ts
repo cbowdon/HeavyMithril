@@ -441,7 +441,7 @@ function testMithril(mock: MithrilMockWindow) {
 		}
 		module.view = function() {}
 		m.module(root, <MithrilModule<MithrilController>>module)
-		m.module(root, {controller: function() {}, view: function() {}})
+		m.module(root, {controller: function() {}, view: function() { return "" }})
 		return unloaded === true
 	})
 	test(function() {
@@ -911,6 +911,7 @@ function testMithril(mock: MithrilMockWindow) {
 			controller: function() {},
 			view: function(ctrl) {
 				count++
+                return ""
 			}
 		})
 		mock.requestAnimationFrame.$resolve() //teardown
@@ -930,6 +931,7 @@ function testMithril(mock: MithrilMockWindow) {
 			controller: function() {},
 			view: function(ctrl) {
 				count++
+                return ""
 			}
 		})
 		mock.requestAnimationFrame.$resolve() //teardown
@@ -1132,8 +1134,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() {}},
-			"/test12": {controller: function() {}, view: function() {}}
+			"/": {controller: function() {}, view: function() { return "" }},
+			"/test12": {controller: function() {}, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test12?a=foo&b=bar")
@@ -1177,8 +1179,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() {}},
-			"/test12": {controller: function() {}, view: function() {}}
+			"/": {controller: function() {}, view: function() { return "" }},
+			"/test12": {controller: function() {}, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test12", {a: "foo", b: "bar"})
@@ -1193,8 +1195,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var route1: string, route2: string
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {route1 = m.route()}, view: function() {}},
-			"/test13": {controller: function() {route2 = m.route()}, view: function() {}}
+			"/": {controller: function() {route1 = m.route()}, view: function() { return "" }},
+			"/test13": {controller: function() {route2 = m.route()}, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test13")
@@ -1221,7 +1223,7 @@ function testMithril(mock: MithrilMockWindow) {
 					})
 				}
 			},
-			"/test14": {controller: function() {}, view: function() {}}
+			"/test14": {controller: function() {}, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test14")

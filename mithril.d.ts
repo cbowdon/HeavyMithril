@@ -2,14 +2,14 @@
 
 interface MithrilStatic {
 
-    // children is string, virtual element, or an array of either. Roll on union types...
+    // m()
     (selector: string, attributes: MithrilAttributes, ...children: Array<string|MithrilVirtualElement>): MithrilVirtualElement;
     (selector: string, ...children: Array<string|MithrilVirtualElement>): MithrilVirtualElement;
 
+    // m.prop()
     prop<T>(promise: MithrilPromise<T>) : MithrilPromiseProperty<T>;
     prop<T>(value: T): MithrilProperty<T>;
-    // might be that this should be Property<any>
-    prop(): MithrilProperty<Object>;
+    prop(): MithrilProperty<Object>; // might be that this should be Property<any>
 
     withAttr(property: string, callback: (value: any) => void): (e: MithrilEvent) => any;
 
@@ -17,6 +17,7 @@ interface MithrilStatic {
 
     trust(html: string): string;
 
+    // m.render()
     render(rootElement: Element|HTMLDocument): void;
     render(rootElement: Element|HTMLDocument, children: MithrilVirtualElement, forceRecreation?: boolean): void;
     render(rootElement: Element|HTMLDocument, children: MithrilVirtualElement[], forceRecreation?: boolean): void;
@@ -111,7 +112,7 @@ interface MithrilController {
 }
 
 interface MithrilView<T extends MithrilController> {
-    (ctrl: T): any; // string | VirtualElement
+    (ctrl: T): string|MithrilVirtualElement;
 }
 
 interface MithrilModule<T extends MithrilController> {

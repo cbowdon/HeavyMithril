@@ -480,6 +480,7 @@ function testMithril(mock) {
         m.module(root, module);
         m.module(root, { controller: function () {
         }, view: function () {
+            return "";
         } });
         return unloaded === true;
     });
@@ -969,6 +970,7 @@ function testMithril(mock) {
             },
             view: function (ctrl) {
                 count++;
+                return "";
             }
         });
         mock.requestAnimationFrame.$resolve(); //teardown
@@ -988,6 +990,7 @@ function testMithril(mock) {
             },
             view: function (ctrl) {
                 count++;
+                return "";
             }
         });
         mock.requestAnimationFrame.$resolve(); //teardown
@@ -1201,9 +1204,11 @@ function testMithril(mock) {
         m.route(root, "/", {
             "/": { controller: function () {
             }, view: function () {
+                return "";
             } },
             "/test12": { controller: function () {
             }, view: function () {
+                return "";
             } }
         });
         mock.requestAnimationFrame.$resolve();
@@ -1259,9 +1264,11 @@ function testMithril(mock) {
         m.route(root, "/", {
             "/": { controller: function () {
             }, view: function () {
+                return "";
             } },
             "/test12": { controller: function () {
             }, view: function () {
+                return "";
             } }
         });
         mock.requestAnimationFrame.$resolve();
@@ -1279,10 +1286,12 @@ function testMithril(mock) {
             "/": { controller: function () {
                 route1 = m.route();
             }, view: function () {
+                return "";
             } },
             "/test13": { controller: function () {
                 route2 = m.route();
             }, view: function () {
+                return "";
             } }
         });
         mock.requestAnimationFrame.$resolve();
@@ -1312,6 +1321,7 @@ function testMithril(mock) {
             },
             "/test14": { controller: function () {
             }, view: function () {
+                return "";
             } }
         });
         mock.requestAnimationFrame.$resolve();
