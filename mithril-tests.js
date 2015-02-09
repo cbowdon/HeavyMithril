@@ -1688,7 +1688,9 @@ function testMithril(mock) {
                 }
             }
         });
-        root.childNodes[0].onclick(null);
+        var evt = document.createEvent("MouseEvent");
+        evt.initMouseEvent("click", true, true, mock.window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        root.childNodes[0].onclick(evt);
         mock.requestAnimationFrame.$resolve(); //teardown
         return strategy == "diff" && root.childNodes[0].childNodes[0].nodeValue == "1";
     });
@@ -1713,7 +1715,9 @@ function testMithril(mock) {
                 }
             }
         });
-        root.childNodes[0].onclick(null);
+        var evt = document.createEvent("MouseEvent");
+        evt.initMouseEvent("click", true, true, mock.window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+        root.childNodes[0].onclick(evt);
         mock.requestAnimationFrame.$resolve(); //teardown
         return count == 2;
     });
