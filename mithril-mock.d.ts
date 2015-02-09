@@ -1,21 +1,18 @@
 // For test suite
 
-declare module Mithril {
+interface MithrilMock {
+    window: MithrilMockWindow;
+}
 
-  interface Mock {
-      window: MockWindow;
-  }
+interface MithrilMockWindow extends Window {
+    [id: string]: any;
+    requestAnimationFrame: RequestAnimationFrame;
+    XMLHttpRequest: XMLHttpRequest;
+}
 
-  interface MockWindow extends Window {
-      [id: string]: any;
-      requestAnimationFrame: RequestAnimationFrame;
-      XMLHttpRequest: XMLHttpRequest;
-  }
-
-  interface RequestAnimationFrame {
-      (callback: FrameRequestCallback): number;
-      $resolve(): void;
-  }
+interface RequestAnimationFrame {
+    (callback: FrameRequestCallback): number;
+    $resolve(): void;
 }
 
 // Extend array to allow use as literal for NodeList
@@ -28,9 +25,9 @@ interface XMLHttpRequest {
     $headers: { [id: string]: string };
 }
 
-declare var mock: Mithril.Mock;
+declare var mock: MithrilMock;
 
 declare module 'mithril-mock' {
-    var mithrilMock: Mithril.Mock;
+    var mithrilMock: MithrilMock;
     export = mithrilMock;
 }

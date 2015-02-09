@@ -3,7 +3,7 @@
 
 interface Test {
     (act: () => boolean): any;
-    (act: () => Mithril.VirtualElement): any;
+    (act: () => MithrilVirtualElement): any;
     print: (value: any) => any;
 }
 
@@ -15,7 +15,7 @@ interface Node {
 }
 interface NodeList extends Array<Node> { }
 
-interface TestCtrl extends Mithril.Controller {
+interface TestCtrl extends MithrilController {
     value?: string;
     number?: number;
 }
@@ -24,9 +24,9 @@ interface TestData {
     foo: string;
 }
 
-class Field implements Mithril.VirtualElement {
+class Field implements MithrilVirtualElement {
     tag: string;
-    attrs: Mithril.Attributes;
+    attrs: MithrilAttributes;
     children: any;
     constructor() {
         this.tag = "div";
@@ -35,7 +35,7 @@ class Field implements Mithril.VirtualElement {
     }
 }
 
-function testMithril(mock: Mithril.MockWindow) {
+function testMithril(mock: MithrilMockWindow) {
 	m.deps(mock)
 
 	//m
@@ -440,7 +440,7 @@ function testMithril(mock: Mithril.MockWindow) {
 			this.onunload = function() {unloaded = true}
 		}
 		module.view = function() {}
-		m.module(root, <Mithril.Module<Mithril.Controller>>module)
+		m.module(root, <MithrilModule<MithrilController>>module)
 		m.module(root, {controller: function() {}, view: function() {}})
 		return unloaded === true
 	})
@@ -534,12 +534,12 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var index = 0;
 		var success = true;
-		var statefulConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {ctx.data = index++}
+		var statefulConfig: MithrilElementConfig = function(elem, isInitialized, ctx) {ctx.data = index++}
 		var node = m("div", {config: statefulConfig});
 		m.render(root, [node, node]);
 
 		index = 0;
-		var checkConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {
+		var checkConfig: MithrilElementConfig = function(elem, isInitialized, ctx) {
 			success = success && (ctx.data === index++)
 		}
 		node = m("div", {config: checkConfig});
@@ -701,12 +701,12 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 		var unloadedParent = 0
 		var unloadedChild = 0
-		var configParent: Mithril.ElementConfig = function(el, init, ctx) {
+		var configParent: MithrilElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedParent++
 			}
 		}
-		var configChild: Mithril.ElementConfig = function(el, init, ctx) {
+		var configChild: MithrilElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedChild++
 			}
@@ -720,12 +720,12 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 		var unloadedParent = 0
 		var unloadedChild = 0
-		var configParent: Mithril.ElementConfig = function(el, init, ctx) {
+		var configParent: MithrilElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedParent++
 			}
 		}
-		var configChild: Mithril.ElementConfig = function(el, init, ctx) {
+		var configChild: MithrilElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloadedChild++
 			}
@@ -808,7 +808,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		var root = mock.document.createElement("div")
 
 		var unloaded1 = false
-		var unloadable1: Mithril.ElementConfig = function (element, isInit, context) {
+		var unloadable1: MithrilElementConfig = function (element, isInit, context) {
 			context.onunload = function() {
 				unloaded1 = true
 			}
@@ -817,7 +817,7 @@ function testMithril(mock: Mithril.MockWindow) {
 		m.render(root, [ ])
 
 		var unloaded2 = false
-		var unloadable2: Mithril.ElementConfig = function (element, isInit, context) {
+		var unloadable2: MithrilElementConfig = function (element, isInit, context) {
 			context.onunload = function() {
 				unloaded2 = true
 			}
@@ -1481,7 +1481,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var unloaded = 0
-		var config: Mithril.ElementConfig = function(el, init, ctx) {
+		var config: MithrilElementConfig = function(el, init, ctx) {
 			ctx.onunload = function() {
 				unloaded++
 			}
@@ -1533,7 +1533,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var strategy: string, count = 0
-		var config: Mithril.ElementConfig = function(el, init) {if (!init) count++}
+		var config: MithrilElementConfig = function(el, init) {if (!init) count++}
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
@@ -1586,7 +1586,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var root = mock.document.createElement("div")
 		var count = 0
-		var config: Mithril.ElementConfig = function(el, init ) {if (!init) count++}
+		var config: MithrilElementConfig = function(el, init ) {if (!init) count++}
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
@@ -1695,8 +1695,8 @@ function testMithril(mock: Mithril.MockWindow) {
 		b.view = function(ctrl: TestCtrl) {return "b"}
 
 		m.route<TestCtrl>(root, "/a", {
-			"/a": <Mithril.Module<TestCtrl>>a,
-			"/b": <Mithril.Module<TestCtrl>>b
+			"/a": <MithrilModule<TestCtrl>>a,
+			"/b": <MithrilModule<TestCtrl>>b
 		})
 		mock.requestAnimationFrame.$resolve()
 
@@ -1719,8 +1719,8 @@ function testMithril(mock: Mithril.MockWindow) {
 		b.view = function() {return "b"}
 
 		m.route<TestCtrl>(root, "/", {
-			"/": <Mithril.Module<TestCtrl>>a,
-			"/b": <Mithril.Module<TestCtrl>>b,
+			"/": <MithrilModule<TestCtrl>>a,
+			"/b": <MithrilModule<TestCtrl>>b,
 		})
 		mock.requestAnimationFrame.$resolve()
 
@@ -1769,7 +1769,7 @@ function testMithril(mock: Mithril.MockWindow) {
 
 	//m.request
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "GET", url: "test"})
+		var prop = m.request<MithrilXHROptions>({method: "GET", url: "test"})
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().method === "GET" && prop().url === "test"
 	})
@@ -1779,12 +1779,12 @@ function testMithril(mock: Mithril.MockWindow) {
 		return prop() === "foo"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "POST", url: "http://domain.com:80", data: {}}).then(function(value) {return value})
+		var prop = m.request<MithrilXHROptions>({method: "POST", url: "http://domain.com:80", data: {}}).then(function(value) {return value})
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().url === "http://domain.com:80"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "POST", url: "http://domain.com:80/:test1", data: {test1: "foo"}}).then(function(value) {return value})
+		var prop = m.request<MithrilXHROptions>({method: "POST", url: "http://domain.com:80/:test1", data: {test1: "foo"}}).then(function(value) {return value})
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().url === "http://domain.com:80/foo"
 	})
@@ -1829,17 +1829,17 @@ function testMithril(mock: Mithril.MockWindow) {
 		return prop() === "bar"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "GET", url: "test", data: {foo: 1}})
+		var prop = m.request<MithrilXHROptions>({method: "GET", url: "test", data: {foo: 1}})
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().url === "test?foo=1"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "POST", url: "test", data: {foo: 1}})
+		var prop = m.request<MithrilXHROptions>({method: "POST", url: "test", data: {foo: 1}})
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().url === "test"
 	})
 	test(function() {
-		var prop = m.request<Mithril.XHROptions>({method: "GET", url: "test", data: {foo: [1, 2]}})
+		var prop = m.request<MithrilXHROptions>({method: "GET", url: "test", data: {foo: [1, 2]}})
 		mock.XMLHttpRequest.$instances.pop().onreadystatechange(null)
 		return prop().url === "test?foo%5B%5D=1&foo%5B%5D=2"
 	})
@@ -2175,12 +2175,12 @@ function testMithril(mock: Mithril.MockWindow) {
 
 		var idx = 0;
 		var success = true;
-		var statefulConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {ctx.data=idx++}
+		var statefulConfig: MithrilElementConfig = function(elem, isInitialized, ctx) {ctx.data=idx++}
 		var node = m("div", {config: statefulConfig});
 		m.render(root, [node, node]);
 
 		idx = 0;
-		var checkConfig: Mithril.ElementConfig = function(elem, isInitialized, ctx) {
+		var checkConfig: MithrilElementConfig = function(elem, isInitialized, ctx) {
 			success = success && (ctx.data === idx++)
 		}
 		node = m("div", {config: checkConfig});
