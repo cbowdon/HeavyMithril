@@ -17,19 +17,21 @@ interface TodoCtrl extends MithrilController {
     add(): void;
 }
 
+// Code _will_ compile without these annotations,
+// but will default to MithrilController rather than TodoCtrl
 var todo: MithrilModule<TodoCtrl> = {
 
-    // the cast to TodoCtrl is a bit ugly, but best we can do
+    // The cast to TodoCtrl is a bit ugly, but TS can't otherwise handle the function constructor pattern
     controller: <TodoCtrl>function() {
         this.list = []
         this.description = m.prop("");
 
-        this.add = function() {
+        this.add = () => {
             if (this.description()) {
                 this.list.push(new Todo({description: this.description()}));
                 this.description("");
             }
-        }.bind(this);
+        };
     },
 
     view: function(ctrl: TodoCtrl) {
