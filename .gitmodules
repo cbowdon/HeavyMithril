@@ -1,0 +1,3 @@
+[submodule "mithril.js"]
+	path = mithril.js
+	url = https://github.com/cbowdon/mithril.js.git
