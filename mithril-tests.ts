@@ -15,10 +15,13 @@ interface Node {
 }
 interface NodeList extends Array<Node> { }
 
-interface TestCtrl extends MithrilController {
-    value?: string;
-    number?: number;
+class TestCtrl implements MithrilController {
+    value: string;
+    number: number;
 }
+class EmptyCtrl extends TestCtrl { }
+class T1 extends TestCtrl { constructor() { super(); this.value = "test1" } }
+class T2 extends TestCtrl { constructor() { super(); this.value = "test2" } }
 
 interface TestData {
     foo: string;
@@ -76,14 +79,14 @@ function testMithril(mock: MithrilMockWindow) {
 		mock.requestAnimationFrame.$resolve()
 
 		var root1 = mock.document.createElement("div")
-		var mod1 = m.module<TestCtrl>(root1, {
-			controller: function() {this.value = "test1"},
+		var mod1 = m.module<T1>(root1, {
+			controller: T1,
 			view: function(ctrl) {return ctrl.value}
 		})
 
 		var root2 = mock.document.createElement("div")
-		var mod2 = m.module<TestCtrl>(root2, {
-			controller: function() {this.value = "test2"},
+		var mod2 = m.module<T2>(root2, {
+			controller: T2,
 			view: function(ctrl) {return ctrl.value}
 		})
 
@@ -98,7 +101,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		var unloaded = false
 		var mod = m.module<TestCtrl>(root, {
-			controller: function() {
+			controller: <Constructor<TestCtrl>><any>function() {
 				this.value = "test1"
 				this.onunload = function() {
 					unloaded = true
@@ -441,7 +444,7 @@ function testMithril(mock: MithrilMockWindow) {
 		}
 		module.view = function() {}
 		m.module(root, <MithrilModule<MithrilController>>module)
-		m.module(root, {controller: function() {}, view: function() { return "" }})
+		m.module(root, {controller: EmptyCtrl, view: function() { return "" }})
 		return unloaded === true
 	})
 	test(function() {
@@ -893,7 +896,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var controller: TestCtrl
 		var root = mock.document.createElement("div")
 		m.module<TestCtrl>(root, {
-			controller: function() {controller = this},
+			controller: <Constructor<TestCtrl>><any>function() {controller = this},
 			view: function(ctrl) {return ctrl.value}
 		})
 		mock.requestAnimationFrame.$resolve()
@@ -908,7 +911,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var count = 0
 		var root = mock.document.createElement("div")
 		m.module(root, {
-			controller: function() {},
+			controller: EmptyCtrl,
 			view: function(ctrl) {
 				count++
                 return ""
@@ -928,7 +931,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var count = 0
 		var root = mock.document.createElement("div")
 		m.module(root, {
-			controller: function() {},
+			controller: EmptyCtrl,
 			view: function(ctrl) {
 				count++
                 return ""
@@ -952,7 +955,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/test1", {
-			"/test1": {controller: function() {}, view: function() {return "foo"}}
+			"/test1": {controller: EmptyCtrl, view: function() {return "foo"}}
 		})
 		mock.requestAnimationFrame.$resolve() //teardown
 		return mock.location.search == "?/test1" && root.childNodes[0].nodeValue === "foo"
@@ -965,7 +968,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "pathname"
 		m.route(root, "/test2", {
 			"/test2": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [
 						"foo",
@@ -986,7 +989,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "hash"
 		m.route(root, "/test3", {
-			"/test3": {controller: function() {}, view: function() {return "foo"}}
+			"/test3": {controller: EmptyCtrl, view: function() {return "foo"}}
 		})
 		mock.requestAnimationFrame.$resolve() //teardown
 		return mock.location.hash == "#/test3" && root.childNodes[0].nodeValue === "foo"
@@ -998,7 +1001,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/test4/foo", {
-			"/test4/:test": {controller: function() {}, view: function() {return m.route.param("test")}}
+			"/test4/:test": {controller: EmptyCtrl, view: function() {return m.route.param("test")}}
 		})
 		mock.requestAnimationFrame.$resolve() //teardown
 		return mock.location.search == "?/test4/foo" && root.childNodes[0].nodeValue === "foo"
@@ -1007,7 +1010,7 @@ function testMithril(mock: MithrilMockWindow) {
 		mock.requestAnimationFrame.$resolve() //setup
 		mock.location.search = "?"
 
-		var module = {controller: function() {}, view: function() {return m.route.param("test")}}
+		var module = {controller: EmptyCtrl, view: function() {return m.route.param("test")}}
 
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
@@ -1026,7 +1029,7 @@ function testMithril(mock: MithrilMockWindow) {
 		mock.requestAnimationFrame.$resolve() //setup
 		mock.location.search = "?"
 
-		var module = {controller: function() {}, view: function() {return m.route.param("a1")}}
+		var module = {controller: EmptyCtrl, view: function() {return m.route.param("a1")}}
 
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
@@ -1046,7 +1049,7 @@ function testMithril(mock: MithrilMockWindow) {
 		mock.requestAnimationFrame.$resolve() //setup
 		mock.location.search = "?"
 
-		var module = {controller: function() {}, view: function() {return m.route.param("a1")}}
+		var module = {controller: EmptyCtrl, view: function() {return m.route.param("a1")}}
 
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
@@ -1069,7 +1072,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/test8/foo/SEP/bar/baz", {
 			"/test8/:test/SEP/:path...": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m.route.param("test") + "_" + m.route.param("path")
 				}
@@ -1086,7 +1089,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/test9/foo/bar/SEP/baz", {
 			"/test9/:test.../SEP/:path": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m.route.param("test") + "_" + m.route.param("path")
 				}
@@ -1103,7 +1106,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/test10/foo%20bar", {
 			"/test10/:test": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m.route.param("test")
 				}
@@ -1119,8 +1122,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() {return "foo"}},
-			"/test11": {controller: function() {}, view: function() {return "bar"}}
+			"/": {controller: EmptyCtrl, view: function() {return "foo"}},
+			"/test11": {controller: EmptyCtrl, view: function() {return "bar"}}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test11/")
@@ -1134,8 +1137,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() { return "" }},
-			"/test12": {controller: function() {}, view: function() { return "" }}
+			"/": {controller: EmptyCtrl, view: function() { return "" }},
+			"/test12": {controller: EmptyCtrl, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test12?a=foo&b=bar")
@@ -1149,8 +1152,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() {return "bar"}},
-			"/test13/:test": {controller: function() {}, view: function() {return m.route.param("test")}}
+			"/": {controller: EmptyCtrl, view: function() {return "bar"}},
+			"/test13/:test": {controller: EmptyCtrl, view: function() {return m.route.param("test")}}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test13/foo?test=bar")
@@ -1164,8 +1167,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() {return "bar"}},
-			"/test14": {controller: function() {}, view: function() {return "foo"}}
+			"/": {controller: EmptyCtrl, view: function() {return "bar"}},
+			"/test14": {controller: EmptyCtrl, view: function() {return "foo"}}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test14?test&test2=")
@@ -1179,8 +1182,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() { return "" }},
-			"/test12": {controller: function() {}, view: function() { return "" }}
+			"/": {controller: EmptyCtrl, view: function() { return "" }},
+			"/test12": {controller: EmptyCtrl, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test12", {a: "foo", b: "bar"})
@@ -1195,8 +1198,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var route1: string, route2: string
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {route1 = m.route()}, view: function() { return "" }},
-			"/test13": {controller: function() {route2 = m.route()}, view: function() { return "" }}
+			"/": {controller: <Constructor<TestCtrl>><any>function() {route1 = m.route()}, view: function() { return "" }},
+			"/test13": {controller: <Constructor<TestCtrl>><any>function() {route2 = m.route()}, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test13")
@@ -1212,7 +1215,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("div", {
 						config: function(el, init, ctx) {
@@ -1223,7 +1226,7 @@ function testMithril(mock: MithrilMockWindow) {
 					})
 				}
 			},
-			"/test14": {controller: function() {}, view: function() { return "" }}
+			"/test14": {controller: EmptyCtrl, view: function() { return "" }}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route("/test14")
@@ -1239,7 +1242,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [
 						m("div"),
@@ -1254,7 +1257,7 @@ function testMithril(mock: MithrilMockWindow) {
 				}
 			},
 			"/test15": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [m("div")]
 				}
@@ -1274,7 +1277,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("div", {
 						config: function(el, init, ctx) {
@@ -1286,7 +1289,7 @@ function testMithril(mock: MithrilMockWindow) {
 				}
 			},
 			"/test16": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("a")
 				}
@@ -1306,7 +1309,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [
 						m("div", {
@@ -1320,7 +1323,7 @@ function testMithril(mock: MithrilMockWindow) {
 				}
 			},
 			"/test17": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("a")
 				}
@@ -1340,7 +1343,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("div", {
 						config: function(el, init, ctx) {
@@ -1352,7 +1355,7 @@ function testMithril(mock: MithrilMockWindow) {
 				}
 			},
 			"/test18": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [m("a")]
 				}
@@ -1372,7 +1375,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [
 						m("div", {
@@ -1387,7 +1390,7 @@ function testMithril(mock: MithrilMockWindow) {
 				}
 			},
 			"/test20": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [
 						m("div", {
@@ -1416,7 +1419,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/", {
 			"/": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [
 						m("div", {
@@ -1431,7 +1434,7 @@ function testMithril(mock: MithrilMockWindow) {
 				}
 			},
 			"/test21": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return [
 						m("div", {
@@ -1458,13 +1461,13 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/foo", {
 			"/foo": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("div", "foo");
 				}
 			},
 			"/bar": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("div", "bar");
 				}
@@ -1491,13 +1494,13 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route(root, "/foo1", {
 			"/foo1": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("div", m("a", {config: config}, "foo"));
 				}
 			},
 			"/bar1": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("main", m("a", {config: config}, "foo"));
 				}
@@ -1517,7 +1520,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
-				controller: function() {
+				controller: <Constructor<TestCtrl>><any>function() {
 					strategy = m.redraw.strategy()
 					m.redraw.strategy("none")
 				},
@@ -1539,13 +1542,13 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function() {
 					return m("div", {config: config});
 				}
 			},
 			"/bar1": {
-				controller: function() {
+				controller: <Constructor<TestCtrl>><any>function() {
 					strategy = m.redraw.strategy()
 					m.redraw.strategy("redraw")
 				},
@@ -1568,7 +1571,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
-				controller: function() {this.number = 1},
+				controller: <Constructor<TestCtrl>><any>function() {this.number = 1},
 				view: function(ctrl) {
 					return m("div", {onclick: function() {
 						strategy = m.redraw.strategy()
@@ -1594,7 +1597,7 @@ function testMithril(mock: MithrilMockWindow) {
 		m.route.mode = "search"
 		m.route<TestCtrl>(root, "/foo1", {
 			"/foo1": {
-				controller: function() {},
+				controller: EmptyCtrl,
 				view: function(ctrl) {
 					return m("div", {config: config, onclick: function() {
 						m.redraw.strategy("all")
@@ -1616,7 +1619,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var value: string
 		m.route(root, "/foo+bar", {
 			"/:arg": {
-				controller: function() {value = m.route.param("arg")},
+				controller: <Constructor<TestCtrl>><any>function() {value = m.route.param("arg")},
 				view: function(ctrl) {
 					return ""
 				}
@@ -1631,8 +1634,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() {return "foo"}},
-			"/test22": {controller: function() {}, view: function() {return "bar"}}
+			"/": {controller: EmptyCtrl, view: function() {return "foo"}},
+			"/test22": {controller: EmptyCtrl, view: function() {return "bar"}}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route(String("/test22/"))
@@ -1646,8 +1649,8 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 		m.route.mode = "search"
 		m.route(root, "/", {
-			"/": {controller: function() {}, view: function() {return "foo"}},
-			"/test23": {controller: function() {}, view: function() {return "bar"}}
+			"/": {controller: EmptyCtrl, view: function() {return "foo"}},
+			"/test23": {controller: EmptyCtrl, view: function() {return "bar"}}
 		})
 		mock.requestAnimationFrame.$resolve()
 		m.route(<string>new String("/test23/"))
@@ -1662,7 +1665,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var value: string
 		m.route(root, String("/foo+bar"), {
 			"/:arg": {
-				controller: function() {value = m.route.param("arg")},
+				controller: <Constructor<TestCtrl>><any>function() {value = m.route.param("arg")},
 				view: function(ctrl) {
 					return ""
 				}
@@ -1678,7 +1681,7 @@ function testMithril(mock: MithrilMockWindow) {
 		var value: string
 		m.route(root, <string>new String("/foo+bar"), {
 			"/:arg": {
-				controller: function() {value = m.route.param("arg")},
+				controller: <Constructor<TestCtrl>><any>function() {value = m.route.param("arg")},
 				view: function(ctrl) {
 					return ""
 				}
@@ -1693,11 +1696,11 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 
 		var a: any = {}
-		a.controller = function() {m.route("/b")}
+		a.controller = <Constructor<TestCtrl>><any>function() {m.route("/b")}
 		a.view = function() {return "a"}
 
 		var b: any = {}
-		b.controller = function() {}
+		b.controller = EmptyCtrl
 		b.view = function(ctrl: TestCtrl) {return "b"}
 
 		m.route<TestCtrl>(root, "/a", {
@@ -1715,13 +1718,13 @@ function testMithril(mock: MithrilMockWindow) {
 		var root = mock.document.createElement("div")
 
 		var a: any = {}
-		a.controller = function() {
+		a.controller = <Constructor<TestCtrl>><any>function() {
 			m.route("/b?foo=1", {foo: 2})
 		}
 		a.view = function() {return "a"}
 
 		var b:any = {}
-		b.controller = function() {}
+		b.controller = EmptyCtrl
 		b.view = function() {return "b"}
 
 		m.route<TestCtrl>(root, "/", {
@@ -2151,8 +2154,8 @@ function testMithril(mock: MithrilMockWindow) {
 		mock.requestAnimationFrame.$resolve()
 
 		var root = mock.document.createElement("div")
-		var controller = m.module<TestCtrl>(root, {
-			controller: function() {},
+		var controller = m.module<EmptyCtrl>(root, {
+			controller: EmptyCtrl,
 			view: function(ctrl) {return ctrl.value}
 		})
 

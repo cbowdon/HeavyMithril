@@ -21,7 +21,6 @@ var TodoCtrl = (function () {
     }
     return TodoCtrl;
 })();
-// Specify that todo is a Module, TS can infer all the other types
 var todo = {
     controller: TodoCtrl,
     view: function (ctrl) {

@@ -1,5 +1,39 @@
 /// <reference path="mithril.d.ts" />
 /// <reference path="mithril-mock.d.ts" />
+var __extends = this.__extends || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    __.prototype = b.prototype;
+    d.prototype = new __();
+};
+var TestCtrl = (function () {
+    function TestCtrl() {
+    }
+    return TestCtrl;
+})();
+var EmptyCtrl = (function (_super) {
+    __extends(EmptyCtrl, _super);
+    function EmptyCtrl() {
+        _super.apply(this, arguments);
+    }
+    return EmptyCtrl;
+})(TestCtrl);
+var T1 = (function (_super) {
+    __extends(T1, _super);
+    function T1() {
+        _super.call(this);
+        this.value = "test1";
+    }
+    return T1;
+})(TestCtrl);
+var T2 = (function (_super) {
+    __extends(T2, _super);
+    function T2() {
+        _super.call(this);
+        this.value = "test2";
+    }
+    return T2;
+})(TestCtrl);
 var Field = (function () {
     function Field() {
         this.tag = "div";
@@ -109,18 +143,14 @@ function testMithril(mock) {
         mock.requestAnimationFrame.$resolve();
         var root1 = mock.document.createElement("div");
         var mod1 = m.module(root1, {
-            controller: function () {
-                this.value = "test1";
-            },
+            controller: T1,
             view: function (ctrl) {
                 return ctrl.value;
             }
         });
         var root2 = mock.document.createElement("div");
         var mod2 = m.module(root2, {
-            controller: function () {
-                this.value = "test2";
-            },
+            controller: T2,
             view: function (ctrl) {
                 return ctrl.value;
             }
@@ -478,8 +508,7 @@ function testMithril(mock) {
         module.view = function () {
         };
         m.module(root, module);
-        m.module(root, { controller: function () {
-        }, view: function () {
+        m.module(root, { controller: EmptyCtrl, view: function () {
             return "";
         } });
         return unloaded === true;
@@ -966,8 +995,7 @@ function testMithril(mock) {
         var count = 0;
         var root = mock.document.createElement("div");
         m.module(root, {
-            controller: function () {
-            },
+            controller: EmptyCtrl,
             view: function (ctrl) {
                 count++;
                 return "";
@@ -986,8 +1014,7 @@ function testMithril(mock) {
         var count = 0;
         var root = mock.document.createElement("div");
         m.module(root, {
-            controller: function () {
-            },
+            controller: EmptyCtrl,
             view: function (ctrl) {
                 count++;
                 return "";
@@ -1008,8 +1035,7 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/test1", {
-            "/test1": { controller: function () {
-            }, view: function () {
+            "/test1": { controller: EmptyCtrl, view: function () {
                 return "foo";
             } }
         });
@@ -1023,8 +1049,7 @@ function testMithril(mock) {
         m.route.mode = "pathname";
         m.route(root, "/test2", {
             "/test2": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [
                         "foo",
@@ -1042,8 +1067,7 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "hash";
         m.route(root, "/test3", {
-            "/test3": { controller: function () {
-            }, view: function () {
+            "/test3": { controller: EmptyCtrl, view: function () {
                 return "foo";
             } }
         });
@@ -1056,8 +1080,7 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/test4/foo", {
-            "/test4/:test": { controller: function () {
-            }, view: function () {
+            "/test4/:test": { controller: EmptyCtrl, view: function () {
                 return m.route.param("test");
             } }
         });
@@ -1067,8 +1090,7 @@ function testMithril(mock) {
     test(function () {
         mock.requestAnimationFrame.$resolve(); //setup
         mock.location.search = "?";
-        var module = { controller: function () {
-        }, view: function () {
+        var module = { controller: EmptyCtrl, view: function () {
             return m.route.param("test");
         } };
         var root = mock.document.createElement("div");
@@ -1087,8 +1109,7 @@ function testMithril(mock) {
     test(function () {
         mock.requestAnimationFrame.$resolve(); //setup
         mock.location.search = "?";
-        var module = { controller: function () {
-        }, view: function () {
+        var module = { controller: EmptyCtrl, view: function () {
             return m.route.param("a1");
         } };
         var root = mock.document.createElement("div");
@@ -1108,8 +1129,7 @@ function testMithril(mock) {
         //https://github.com/lhorie/mithril.js/issues/61
         mock.requestAnimationFrame.$resolve(); //setup
         mock.location.search = "?";
-        var module = { controller: function () {
-        }, view: function () {
+        var module = { controller: EmptyCtrl, view: function () {
             return m.route.param("a1");
         } };
         var root = mock.document.createElement("div");
@@ -1132,8 +1152,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/test8/foo/SEP/bar/baz", {
             "/test8/:test/SEP/:path...": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m.route.param("test") + "_" + m.route.param("path");
                 }
@@ -1149,8 +1168,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/test9/foo/bar/SEP/baz", {
             "/test9/:test.../SEP/:path": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m.route.param("test") + "_" + m.route.param("path");
                 }
@@ -1166,8 +1184,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/test10/foo%20bar", {
             "/test10/:test": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m.route.param("test");
                 }
@@ -1182,12 +1199,10 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/", {
-            "/": { controller: function () {
-            }, view: function () {
+            "/": { controller: EmptyCtrl, view: function () {
                 return "foo";
             } },
-            "/test11": { controller: function () {
-            }, view: function () {
+            "/test11": { controller: EmptyCtrl, view: function () {
                 return "bar";
             } }
         });
@@ -1202,12 +1217,10 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/", {
-            "/": { controller: function () {
-            }, view: function () {
+            "/": { controller: EmptyCtrl, view: function () {
                 return "";
             } },
-            "/test12": { controller: function () {
-            }, view: function () {
+            "/test12": { controller: EmptyCtrl, view: function () {
                 return "";
             } }
         });
@@ -1222,12 +1235,10 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/", {
-            "/": { controller: function () {
-            }, view: function () {
+            "/": { controller: EmptyCtrl, view: function () {
                 return "bar";
             } },
-            "/test13/:test": { controller: function () {
-            }, view: function () {
+            "/test13/:test": { controller: EmptyCtrl, view: function () {
                 return m.route.param("test");
             } }
         });
@@ -1242,12 +1253,10 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/", {
-            "/": { controller: function () {
-            }, view: function () {
+            "/": { controller: EmptyCtrl, view: function () {
                 return "bar";
             } },
-            "/test14": { controller: function () {
-            }, view: function () {
+            "/test14": { controller: EmptyCtrl, view: function () {
                 return "foo";
             } }
         });
@@ -1262,12 +1271,10 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/", {
-            "/": { controller: function () {
-            }, view: function () {
+            "/": { controller: EmptyCtrl, view: function () {
                 return "";
             } },
-            "/test12": { controller: function () {
-            }, view: function () {
+            "/test12": { controller: EmptyCtrl, view: function () {
                 return "";
             } }
         });
@@ -1307,8 +1314,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/", {
             "/": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("div", {
                         config: function (el, init, ctx) {
@@ -1319,8 +1325,7 @@ function testMithril(mock) {
                     });
                 }
             },
-            "/test14": { controller: function () {
-            }, view: function () {
+            "/test14": { controller: EmptyCtrl, view: function () {
                 return "";
             } }
         });
@@ -1337,8 +1342,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/", {
             "/": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [
                         m("div"),
@@ -1353,8 +1357,7 @@ function testMithril(mock) {
                 }
             },
             "/test15": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [m("div")];
                 }
@@ -1373,8 +1376,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/", {
             "/": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("div", {
                         config: function (el, init, ctx) {
@@ -1386,8 +1388,7 @@ function testMithril(mock) {
                 }
             },
             "/test16": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("a");
                 }
@@ -1406,8 +1407,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/", {
             "/": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [
                         m("div", {
@@ -1421,8 +1421,7 @@ function testMithril(mock) {
                 }
             },
             "/test17": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("a");
                 }
@@ -1441,8 +1440,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/", {
             "/": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("div", {
                         config: function (el, init, ctx) {
@@ -1454,8 +1452,7 @@ function testMithril(mock) {
                 }
             },
             "/test18": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [m("a")];
                 }
@@ -1474,8 +1471,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/", {
             "/": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [
                         m("div", {
@@ -1490,8 +1486,7 @@ function testMithril(mock) {
                 }
             },
             "/test20": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [
                         m("div", {
@@ -1519,8 +1514,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/", {
             "/": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [
                         m("div", {
@@ -1535,8 +1529,7 @@ function testMithril(mock) {
                 }
             },
             "/test21": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return [
                         m("div", {
@@ -1562,15 +1555,13 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/foo", {
             "/foo": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("div", "foo");
                 }
             },
             "/bar": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("div", "bar");
                 }
@@ -1596,15 +1587,13 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/foo1", {
             "/foo1": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("div", m("a", { config: config }, "foo"));
                 }
             },
             "/bar1": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("main", m("a", { config: config }, "foo"));
                 }
@@ -1647,8 +1636,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/foo1", {
             "/foo1": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function () {
                     return m("div", { config: config });
                 }
@@ -1706,8 +1694,7 @@ function testMithril(mock) {
         m.route.mode = "search";
         m.route(root, "/foo1", {
             "/foo1": {
-                controller: function () {
-                },
+                controller: EmptyCtrl,
                 view: function (ctrl) {
                     return m("div", { config: config, onclick: function () {
                         m.redraw.strategy("all");
@@ -1744,12 +1731,10 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/", {
-            "/": { controller: function () {
-            }, view: function () {
+            "/": { controller: EmptyCtrl, view: function () {
                 return "foo";
             } },
-            "/test22": { controller: function () {
-            }, view: function () {
+            "/test22": { controller: EmptyCtrl, view: function () {
                 return "bar";
             } }
         });
@@ -1764,12 +1749,10 @@ function testMithril(mock) {
         var root = mock.document.createElement("div");
         m.route.mode = "search";
         m.route(root, "/", {
-            "/": { controller: function () {
-            }, view: function () {
+            "/": { controller: EmptyCtrl, view: function () {
                 return "foo";
             } },
-            "/test23": { controller: function () {
-            }, view: function () {
+            "/test23": { controller: EmptyCtrl, view: function () {
                 return "bar";
             } }
         });
@@ -1824,8 +1807,7 @@ function testMithril(mock) {
             return "a";
         };
         var b = {};
-        b.controller = function () {
-        };
+        b.controller = EmptyCtrl;
         b.view = function (ctrl) {
             return "b";
         };
@@ -1848,8 +1830,7 @@ function testMithril(mock) {
             return "a";
         };
         var b = {};
-        b.controller = function () {
-        };
+        b.controller = EmptyCtrl;
         b.view = function () {
             return "b";
         };
@@ -2321,8 +2302,7 @@ function testMithril(mock) {
         mock.requestAnimationFrame.$resolve();
         var root = mock.document.createElement("div");
         var controller = m.module(root, {
-            controller: function () {
-            },
+            controller: EmptyCtrl,
             view: function (ctrl) {
                 return ctrl.value;
             }
