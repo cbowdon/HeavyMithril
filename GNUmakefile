@@ -4,6 +4,9 @@ all: *.ts
 lax: *.ts
 	tsc $^ --sourceMap --module commonjs
 
+todo: todo-app.ts
+	tsc $^ --sourceMap --noImplicitAny
+
 watch: *.ts
 	tsc $^ --noImplicitAny --sourceMap --watch
 

@@ -7,11 +7,8 @@ var Todo = (function () {
     }
     return Todo;
 })();
-// Code _will_ compile without these annotations,
-// but will default to MithrilController rather than TodoCtrl
-var todo = {
-    // The cast to TodoCtrl is a bit ugly, but TS can't otherwise handle the function constructor pattern
-    controller: function () {
+var TodoCtrl = (function () {
+    function TodoCtrl() {
         var _this = this;
         this.list = [];
         this.description = m.prop("");
@@ -21,7 +18,12 @@ var todo = {
                 _this.description("");
             }
         };
-    },
+    }
+    return TodoCtrl;
+})();
+// Specify that todo is a Module, TS can infer all the other types
+var todo = {
+    controller: TodoCtrl,
     view: function (ctrl) {
         return m("html", [
             m("body", [

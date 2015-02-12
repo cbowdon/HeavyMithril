@@ -2,7 +2,7 @@
 // This is the todolist example from http://lhorie.github.io/mithril/getting-started.html
 
 class Todo { // We've lost the namespacing compared to the original,
-             // but that's easily fixed with a TypeScript module
+             // but that's easily fixed with a TypeScript module (and more idiomatic)
     description: MithrilProperty<string>;
     done: MithrilProperty<boolean>;
     constructor(data: { description: string }) {
@@ -11,36 +11,28 @@ class Todo { // We've lost the namespacing compared to the original,
     }
 }
 
-interface TodoCtrl extends MithrilController {
-    list: Todo[];
-    description: MithrilProperty<string>;
-    add(): void;
+class TodoCtrl implements MithrilController {
+    list: Todo[] = [];
+    description = m.prop("");
+    add = () => {
+        if (this.description()) {
+            this.list.push(new Todo({description: this.description()}));
+            this.description("");
+        }
+    };
 }
 
-// Code _will_ compile without these annotations,
-// but will default to MithrilController rather than TodoCtrl
 var todo: MithrilModule<TodoCtrl> = {
 
-    // The cast to TodoCtrl is a bit ugly, but TS can't otherwise handle the function constructor pattern
-    controller: <TodoCtrl>function() {
-        this.list = []
-        this.description = m.prop("");
+    controller: TodoCtrl,
 
-        this.add = () => {
-            if (this.description()) {
-                this.list.push(new Todo({description: this.description()}));
-                this.description("");
-            }
-        };
-    },
-
-    view: function(ctrl: TodoCtrl) {
+    view: function(ctrl) {
         return m("html", [
             m("body", [
                 m("input", {onchange: m.withAttr("value", ctrl.description), value: ctrl.description()}),
                 m("button", {onclick: ctrl.add}, "Add"),
                 m("table", [
-                    ctrl.list.map(function(task: Todo) {
+                    ctrl.list.map(function(task) {
                         return m("tr", [
                             m("td", [
                                 m("input[type=checkbox]", {onclick: m.withAttr("checked", task.done), checked: task.done()})
