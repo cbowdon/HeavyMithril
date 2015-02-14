@@ -11,6 +11,7 @@ var TestCtrl = (function () {
     }
     return TestCtrl;
 })();
+// Can also define controllers as functions inline (and cast to fuller type if necessary)
 var EmptyCtrl = (function (_super) {
     __extends(EmptyCtrl, _super);
     function EmptyCtrl() {

@@ -1,32 +1,31 @@
 /// <reference path="mithril.d.ts" />
 // This is the todolist example from http://lhorie.github.io/mithril/getting-started.html
 
-class Todo { // We've lost the namespacing compared to the original,
-             // but that's easily fixed with a TypeScript module (and more idiomatic)
-    description: MithrilProperty<string>;
-    done: MithrilProperty<boolean>;
-    constructor(data: { description: string }) {
-        this.description = m.prop(data.description);
-        this.done = m.prop(false);
-    }
-}
+module TodoModule {
 
-class TodoCtrl implements MithrilController {
-    list: Todo[] = [];
-    description = m.prop("");
-    add = () => {
-        if (this.description()) {
-            this.list.push(new Todo({description: this.description()}));
-            this.description("");
+    class Todo {
+        description: MithrilProperty<string>;
+        done: MithrilProperty<boolean>;
+        constructor(data: { description: string }) {
+            this.description = m.prop(data.description);
+            this.done = m.prop(false);
         }
-    };
-}
+    }
 
-var todo: MithrilModule<TodoCtrl> = {
+    class TodoCtrl implements MithrilController {
+        list: Todo[] = [];
+        description = m.prop("");
+        add = () => {
+            if (this.description()) {
+                this.list.push(new Todo({description: this.description()}));
+                this.description("");
+            }
+        };
+    }
 
-    controller: TodoCtrl,
+    export var controller = TodoCtrl;
 
-    view: function(ctrl) {
+    export var view: MithrilView<TodoCtrl> = function(ctrl) {
         return m("html", [
             m("body", [
                 m("input", {onchange: m.withAttr("value", ctrl.description), value: ctrl.description()}),
@@ -43,7 +42,7 @@ var todo: MithrilModule<TodoCtrl> = {
                 ])
             ])
         ]);
-    },
-};
+    };
+}
 
-m.module(document, todo);
+m.module(document, TodoModule);
